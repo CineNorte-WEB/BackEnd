@@ -1,0 +1,71 @@
+# IntelliJ IDEA
+.idea/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/shelf
+.idea/**/dataSources/
+.idea/**/dataSources.local.xml
+
+# macOS
+.DS_Store
+._*
+
+# Windows
+Thumbs.db
+$RECYCLE.BIN/
+
+# Gradle
+.gradle/
+**/build/
+
+# Maven
+target/
+
+# Java
+*.class
+*.log
+hs_err_pid*
+
+# Dependency directories
+.m2/
+node_modules/
+
+# Logs and temporary files
+logs/
+*.tmp
+*.trace
+
+# Environment files
+application.properties
+application.yml
+.env
+
+# Spring Boot specific
+application-*.properties
+application-*.yml
+
+# Database files (H2 or other local database files)
+*.mv.db
+*.h2.db
+*.h2.sql
+
+# Test results
+test-results/
+*.out
+
+# Coverage reports
+coverage/
+
+# Distribution files
+dist/
+deploy/
+
+# Temporary files
+*.temp
+*.swp
+
+# Compiled files
+*.exe
+*.dll
+
+HELP.md
