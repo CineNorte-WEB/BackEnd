@@ -1,16 +1,20 @@
-package com.tave.camchelin.domain.schools.entity;
+package com.tave.camchelin.domain.univs.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
+import com.tave.camchelin.domain.places.entity.Place;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@Table(name = "schools")
+@Table(name = "univs")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class School extends BaseEntity {
+public class Univ extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +31,7 @@ public class School extends BaseEntity {
 
     @Column(nullable = false)
     private Float longitude;
+
+    @OneToMany(mappedBy = "univ")
+    private List<Place> places = new ArrayList<>();
 }

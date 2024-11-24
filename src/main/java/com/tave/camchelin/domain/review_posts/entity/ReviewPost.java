@@ -3,7 +3,7 @@ package com.tave.camchelin.domain.review_posts.entity;
 import com.tave.camchelin.domain.BaseEntity;
 import com.tave.camchelin.domain.communities.entity.Community;
 import com.tave.camchelin.domain.places.entity.Place;
-import com.tave.camchelin.domain.schools.entity.School;
+import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,20 +21,20 @@ public class ReviewPost extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "community_id", nullable = false)
-    private Community community;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "community_id", nullable = false)
+    private Community community;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id", nullable = false)
-    private School school;
+    @JoinColumn(name = "univ_id", nullable = false)
+    private Univ univ;
 
     private String menu;
 

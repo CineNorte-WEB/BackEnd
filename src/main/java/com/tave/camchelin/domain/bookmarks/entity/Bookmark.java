@@ -1,5 +1,6 @@
-package com.tave.camchelin.domain.hearts.entity;
+package com.tave.camchelin.domain.bookmarks.entity;
 
+import com.tave.camchelin.domain.BaseEntity;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.users.entity.User;
 import jakarta.persistence.*;
@@ -8,12 +9,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "hearts")
+@Table(name = "bookmarks")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Heart {
+public class Bookmark extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,4 @@ public class Heart {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
 }

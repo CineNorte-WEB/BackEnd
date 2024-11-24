@@ -1,6 +1,7 @@
 package com.tave.camchelin.domain.review_analyses.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
+import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,11 +18,14 @@ public class ReviewAnalysis extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_post_id", nullable = false)
-    private ReviewPost reviewPost;
+    @ManyToOne
+    @JoinColumn(name = "place_id", nullable = false)
+    private Place place;
 
-    @Column(name = "analysis_result", nullable = false, columnDefinition = "TEXT")
-    private String analysisResult;
+    @Column(nullable = false)
+    private Float reviewPositiveRating;
+
+    @Column(nullable = false)
+    private Float reviewNegativeCount;
 }
 
