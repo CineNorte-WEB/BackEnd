@@ -1,9 +1,14 @@
 package com.tave.camchelin.domain.places.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
-import com.tave.camchelin.domain.schools.entity.School;
+import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
+import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
+import com.tave.camchelin.domain.univs.entity.Univ;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "places")
@@ -20,6 +25,10 @@ public class Place extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "univ_id", nullable = false)
+    private Univ univ;
+
     @Column(nullable = false)
     private String summary;
 
@@ -35,8 +44,10 @@ public class Place extends BaseEntity {
     @Column(nullable = false)
     private Float longitude;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id", nullable = false)
-    private School school;
-}
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewPost> reviewPosts = new ArrayList<>();
+
+}

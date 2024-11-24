@@ -1,5 +1,6 @@
 package com.tave.camchelin.domain.users.dto;
 
+import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.users.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,14 +16,14 @@ public class UserDto {
     private String username;
     private String password;
     private String nickname;
-    private String school;
+    private Univ univ;
 
     public User toEntity() {
         return User.builder()
                 .username(this.username)
                 .password(this.password)
                 .nickname(this.nickname)
-                .school(this.school)
+                .univ(this.univ)
                 .build();
     }
 
@@ -32,7 +33,7 @@ public class UserDto {
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
-                .school(user.getSchool())
+                .univ(user.getUniv())
                 .build();
     }
 }

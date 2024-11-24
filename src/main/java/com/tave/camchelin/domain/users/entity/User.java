@@ -1,9 +1,16 @@
 package com.tave.camchelin.domain.users.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
+import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
+import com.tave.camchelin.domain.places.entity.Place;
+import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
+import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.users.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -17,6 +24,10 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "univ_id", nullable = false)
+    private Univ univ;
+
     @Column(nullable = false, unique = true) // NOT NULL 및 UNIQUE 제약 조건
     private String username;
 
@@ -26,13 +37,17 @@ public class User extends BaseEntity {
     @Column(nullable = false) // NOT NULL
     private String nickname;
 
-    @Column(nullable = false) // NOT NULL
-    private String school;
+    @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Bookmark> bookmarks = new ArrayList<>();
 
-    public void update(String username, String password, String nickname, String school) {
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewPost> reviewPosts = new ArrayList<>();
+
+
+    public void update(String username, String password, String nickname, Univ univ) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
-        this.school= school;
+        this.univ= univ;
     }
 }

@@ -18,4 +18,3 @@ public class Community {
     @Column(nullable = false)
     private String name;
 }
-
