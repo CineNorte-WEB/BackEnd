@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -53,6 +54,15 @@ public class UserService {
         User updatedUser = userRepository.save(user);
 
         return UserDto.fromEntity(updatedUser);
+    }
+
+    public List<PlaceDto> getUserBookmarks(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾지 못했습니다."));
+        return bookmarkRepository.findByUserId(userId)
+                .stream()
+                .map(bookmark -> PlaceDto.fromEntity(bookmark.getPlace()))
+                .collect(Collectors.toList());
     }
 
     public void addBookmark(Long userId, Long placeId) {

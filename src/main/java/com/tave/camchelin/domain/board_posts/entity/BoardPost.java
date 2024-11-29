@@ -1,6 +1,7 @@
 package com.tave.camchelin.domain.board_posts.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
+import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
 import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
 import com.tave.camchelin.domain.comments.entity.Comment;
 import com.tave.camchelin.domain.communities.entity.Community;
@@ -39,4 +40,13 @@ public class BoardPost extends BaseEntity {
 
     @OneToMany(mappedBy = "boardPost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+
+    public void edit(String title, String content) {
+        if (title != null && !title.isBlank()) {
+            this.title = title;
+        }
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
+    }
 }

@@ -26,5 +26,8 @@ public class Menu extends BaseEntity {
 
     @Column(nullable = false)
     private Integer price;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
 }
 

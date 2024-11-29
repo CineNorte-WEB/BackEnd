@@ -15,12 +15,4 @@ import java.util.List;
 @RequestMapping("/bookmarks")
 @RequiredArgsConstructor
 public class BookmarkController {
-
-    private final BookmarkService bookmarkService;
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PlaceDto>> getUserBookmarks(@PathVariable Long userId) {
-        List<PlaceDto> placeDtos = bookmarkService.getUserBookmarks(userId);
-        return ResponseEntity.ok(placeDtos);
-    }
 }
