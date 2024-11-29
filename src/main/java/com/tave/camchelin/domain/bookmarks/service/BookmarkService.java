@@ -15,15 +15,4 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
-
-    private final BookmarkRepository bookmarkRepository;
-    public List<PlaceDto> getUserBookmarks(Long userId) {
-        // User가 북마크한 모든 Bookmark 조회
-        List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
-
-        // 북마크한 Place 목록을 Dto 형태로 변환하여 반환
-        return bookmarks.stream()
-                .map(bookmark -> PlaceDto.fromEntity(bookmark.getPlace())) // PlaceDto로 변환
-                .collect(Collectors.toList());
-    }
 }

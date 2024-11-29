@@ -2,10 +2,8 @@ package com.tave.camchelin.domain.users.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
 import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
-import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
 import com.tave.camchelin.domain.univs.entity.Univ;
-import com.tave.camchelin.domain.users.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,7 +40,6 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewPost> reviewPosts = new ArrayList<>();
-
 
     public void update(String username, String password, String nickname, Univ univ) {
         this.username = username;

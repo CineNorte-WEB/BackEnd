@@ -1,6 +1,7 @@
 package com.tave.camchelin.domain.places.dto;
 
 import com.tave.camchelin.domain.places.entity.Place;
+import com.tave.camchelin.domain.univs.entity.Univ;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,34 +15,51 @@ import lombok.NoArgsConstructor;
 public class PlaceDto {
     private Long id;
     private String name;
+    private String category;
     private String address;
-    private String summary;
+    private String hours;
+    private int reviewCount;
+    private Float rating;
+    private String likePoints;
     private String imageUrl;
     private Float latitude;
     private Float longitude;
+    private Univ univ;
 
     // PlaceDto -> Place 엔티티로 변환
     public Place toEntity() {
         return Place.builder()
                 .name(this.name)
+                .category(this.category)
                 .address(this.address)
-                .summary(this.summary)
+                .hours(this.hours)
+                .reviewCount(this.reviewCount)
+                .rating(this.rating)
+                .likePoints(this.likePoints)
                 .imageUrl(this.imageUrl)
                 .latitude(this.latitude)
                 .longitude(this.longitude)
+                .univ(this.univ)
                 .build();
     }
+
 
     // Place 엔티티 -> PlaceDto로 변환
     public static PlaceDto fromEntity(Place place) {
         return PlaceDto.builder()
                 .id(place.getId())
                 .name(place.getName())
+                .category(place.getCategory())
                 .address(place.getAddress())
-                .summary(place.getSummary())
+                .hours(place.getHours())
+                .reviewCount(place.getReviewCount())
+                .rating(place.getRating())
+                .likePoints(place.getLikePoints())
                 .imageUrl(place.getImageUrl())
                 .latitude(place.getLatitude())
                 .longitude(place.getLongitude())
+                .univ(place.getUniv())
                 .build();
     }
+
 }

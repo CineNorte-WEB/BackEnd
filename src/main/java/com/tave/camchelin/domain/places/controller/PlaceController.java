@@ -18,4 +18,10 @@ public class PlaceController {
         PlaceDto placeDto = placeService.getPlaceById(id);
         return ResponseEntity.ok(placeDto);
     }
+
+    @GetMapping("/{name}")
+    public ResponseEntity<PlaceDto> getPlaceByName(@PathVariable String name) {
+        PlaceDto placeDto = placeService.getPlaceByName(name);
+        return ResponseEntity.ok(placeDto);
+    }
 }

@@ -16,4 +16,10 @@ public class PlaceService {
                 .orElseThrow(() -> new IllegalArgumentException("맛집 정보를 찾지 못했습니다."));
         return PlaceDto.fromEntity(place);
     }
+
+    public PlaceDto getPlaceByName(String placeName) {
+        Place place = placeRepository.findByName(placeName)
+                .orElseThrow(() -> new IllegalArgumentException("맛집 정보를 찾지 못했습니다."));
+        return PlaceDto.fromEntity(place);
+    }
 }

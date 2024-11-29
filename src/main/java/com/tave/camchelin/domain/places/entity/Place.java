@@ -29,19 +29,31 @@ public class Place extends BaseEntity {
     @JoinColumn(name = "univ_id", nullable = false)
     private Univ univ;
 
-    @Column(nullable = false)
-    private String summary;
+    @Column
+    private String category;
 
     @Column(nullable = false)
     private String address;
 
+    @Column
+    private String hours;
+
+    @Column
+    private int reviewCount;
+
+    @Column
+    private Float rating;
+
+    @Column
+    private String likePoints;
+
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column
     private Float latitude;
 
-    @Column(nullable = false)
+    @Column
     private Float longitude;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -49,5 +61,4 @@ public class Place extends BaseEntity {
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewPost> reviewPosts = new ArrayList<>();
-
 }

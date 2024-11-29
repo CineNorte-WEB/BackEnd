@@ -26,10 +26,10 @@ public class Univ extends BaseEntity {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column
     private Float latitude;
 
-    @Column(nullable = false)
+    @Column
     private Float longitude;
 
     @OneToMany(mappedBy = "univ")

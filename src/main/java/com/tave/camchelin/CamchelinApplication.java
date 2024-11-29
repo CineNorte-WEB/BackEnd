@@ -10,4 +10,5 @@ public class CamchelinApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CamchelinApplication.class, args);
 	}
+
 }
