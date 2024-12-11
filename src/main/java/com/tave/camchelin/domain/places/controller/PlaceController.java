@@ -13,13 +13,13 @@ public class PlaceController {
 
     private final PlaceService placeService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<PlaceDto> getPlaceById(@PathVariable Long id) {
         PlaceDto placeDto = placeService.getPlaceById(id);
         return ResponseEntity.ok(placeDto);
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<PlaceDto> getPlaceByName(@PathVariable String name) {
         PlaceDto placeDto = placeService.getPlaceByName(name);
         return ResponseEntity.ok(placeDto);
