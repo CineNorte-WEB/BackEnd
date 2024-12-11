@@ -1,19 +1,19 @@
 package com.tave.camchelin.domain.univs.service;
 
 import com.tave.camchelin.domain.places.dto.PlaceDto;
-import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.univs.dto.UnivDto;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UnivService {
     private final UnivRepository univRepository;
 

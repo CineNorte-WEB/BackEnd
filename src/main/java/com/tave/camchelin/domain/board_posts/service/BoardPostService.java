@@ -5,10 +5,12 @@ import com.tave.camchelin.domain.board_posts.entity.BoardPost;
 import com.tave.camchelin.domain.board_posts.repository.BoardPostRepository;
 import com.tave.camchelin.domain.communities.entity.Community;
 import com.tave.camchelin.domain.communities.repository.CommunityRepository;
+import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,10 +18,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BoardPostService {
-    private static BoardPostRepository boardPostRepository;
-    private static UserRepository userRepository;
-    private static CommunityRepository communityRepository;
+    private final BoardPostRepository boardPostRepository;
+    private final UserRepository userRepository;
+    private final CommunityRepository communityRepository;
 
+    @Transactional(readOnly = true)
     public List<BoardPostDto> getBoardPosts() {
         List<BoardPost> boardPosts = boardPostRepository.findAll();
         return boardPosts.stream()
@@ -27,13 +30,15 @@ public class BoardPostService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public BoardPostDto getBoardPostById(Long boardPostId) {
         BoardPost boardPost = boardPostRepository.findById(boardPostId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         return BoardPostDto.fromEntity(boardPost);
     }
 
-    public void writeBoardPost(BoardPostDto boardPostDto) {
+    @Transactional
+    public BoardPostDto writeBoardPost(BoardPostDto boardPostDto) {
         // User와 Community를 찾아 연관 관계를 설정
         User user = userRepository.findById(boardPostDto.getUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보를 찾을 수 없습니다."));
@@ -49,8 +54,10 @@ public class BoardPostService {
                 .build();
 
         boardPostRepository.save(boardPost);
+        return BoardPostDto.fromEntity(boardPost);
     }
 
+    @Transactional
     public void editBoardPost(Long boardPostId, BoardPostDto boardPostDto) {
         BoardPost boardPost = boardPostRepository.findById(boardPostId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
@@ -61,6 +68,7 @@ public class BoardPostService {
         boardPostRepository.save(boardPost);
     }
 
+    @Transactional
     public void deleteBoardPost(Long boardPostId) {
         BoardPost boardPost = boardPostRepository.findById(boardPostId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));

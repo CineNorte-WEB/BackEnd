@@ -16,14 +16,14 @@ public class UserDto {
     private String username;
     private String password;
     private String nickname;
-    private Univ univ;
+    private Long univId;
 
-    public User toEntity() {
+    public User toEntity(Univ univ) {
         return User.builder()
                 .username(this.username)
                 .password(this.password)
                 .nickname(this.nickname)
-                .univ(this.univ)
+                .univ(univ)
                 .build();
     }
 
@@ -33,7 +33,7 @@ public class UserDto {
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
-                .univ(user.getUniv())
+                .univId(user.getUniv().getId())
                 .build();
     }
 }

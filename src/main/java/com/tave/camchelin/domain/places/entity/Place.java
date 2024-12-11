@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Place extends BaseEntity {
+public class Place {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,12 +49,6 @@ public class Place extends BaseEntity {
 
     @Column(name = "image_url")
     private String imageUrl;
-
-    @Column
-    private Float latitude;
-
-    @Column
-    private Float longitude;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks = new ArrayList<>();

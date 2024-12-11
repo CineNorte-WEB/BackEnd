@@ -19,10 +19,10 @@ public class BoardPostDto {
     private User user;
     private Community community;
 
-    public BoardPost toEntity() {
+    public BoardPost toEntity(User user, Community community) {
         return BoardPost.builder()
-                .title(title)
-                .content(content)
+                .title(this.title)
+                .content(this.content)
                 .user(user)
                 .community(community)
                 .build();

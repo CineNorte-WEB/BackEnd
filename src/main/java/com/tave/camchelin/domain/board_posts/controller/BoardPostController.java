@@ -32,9 +32,9 @@ public class BoardPostController {
 
     // 게시글 작성
     @PostMapping("/write")
-    public ResponseEntity<Void> writeBoardPost(@RequestBody BoardPostDto boardPostDto) {
-        boardPostService.writeBoardPost(boardPostDto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<BoardPostDto> writeBoardPost(@RequestBody BoardPostDto boardPostDto) {
+        BoardPostDto createdBoardPostDto = boardPostService.writeBoardPost(boardPostDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBoardPostDto);
     }
 
     // 게시글 수정

@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Univ extends BaseEntity {
+public class Univ{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +26,8 @@ public class Univ extends BaseEntity {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @Column
-    private Float latitude;
-
-    @Column
-    private Float longitude;
+    @Column(nullable = false)
+    private String address;
 
     @OneToMany(mappedBy = "univ")
     private List<Place> places = new ArrayList<>();

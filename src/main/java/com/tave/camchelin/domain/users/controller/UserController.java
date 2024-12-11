@@ -1,6 +1,8 @@
 package com.tave.camchelin.domain.users.controller;
 
+import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
+import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
 import com.tave.camchelin.domain.users.dto.UserDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.service.UserService;
@@ -63,4 +65,35 @@ public class UserController {
         userService.removeBookmark(userId, placeId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/boards")
+    public List<BoardPostDto> getUserBoards(HttpServletRequest request) {
+        // 세션에서 user 정보 가져오기
+        User user = (User) request.getSession().getAttribute("user");
+
+        // 세션에 user 정보가 없으면 예외 처리
+        if (user == null) {
+            throw new IllegalArgumentException("로그인된 사용자가 아닙니다.");
+        }
+
+        // 사용자 ID로 작성한 게시글 목록을 가져옴
+        return userService.getUserBoardPosts(user.getId());
+    }
+
+    // 사용자가 작성한 리뷰 목록 조회
+    @GetMapping("/reviews")
+    public List<ReviewPostDto> getUserReviews(HttpServletRequest request) {
+        // 세션에서 user 정보 가져오기
+        User user = (User) request.getSession().getAttribute("user");
+
+        // 세션에 user 정보가 없으면 예외 처리
+        if (user == null) {
+            throw new IllegalArgumentException("로그인된 사용자가 아닙니다.");
+        }
+
+        // 사용자 ID로 작성한 리뷰 목록을 가져옴
+        return userService.getUserReviewPosts(user.getId());
+    }
+
+
 }
