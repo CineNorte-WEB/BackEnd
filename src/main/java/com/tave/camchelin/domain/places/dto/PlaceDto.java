@@ -22,12 +22,10 @@ public class PlaceDto {
     private Float rating;
     private String likePoints;
     private String imageUrl;
-    private Float latitude;
-    private Float longitude;
-    private Univ univ;
+    private String univName;
 
     // PlaceDto -> Place 엔티티로 변환
-    public Place toEntity() {
+    public Place toEntity(Univ univ) {
         return Place.builder()
                 .name(this.name)
                 .category(this.category)
@@ -37,9 +35,7 @@ public class PlaceDto {
                 .rating(this.rating)
                 .likePoints(this.likePoints)
                 .imageUrl(this.imageUrl)
-                .latitude(this.latitude)
-                .longitude(this.longitude)
-                .univ(this.univ)
+                .univ(univ)
                 .build();
     }
 
@@ -56,9 +52,7 @@ public class PlaceDto {
                 .rating(place.getRating())
                 .likePoints(place.getLikePoints())
                 .imageUrl(place.getImageUrl())
-                .latitude(place.getLatitude())
-                .longitude(place.getLongitude())
-                .univ(place.getUniv())
+                .univName(place.getUniv().getName())
                 .build();
     }
 

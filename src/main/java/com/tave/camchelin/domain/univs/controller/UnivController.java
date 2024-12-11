@@ -17,14 +17,14 @@ public class UnivController {
     private final UnivService univService;
 
 
-    @GetMapping("/{id}") // Univ 조회 (id로 조회)
+    @GetMapping("/id/{id}") // Univ 조회 (id로 조회)
     public ResponseEntity<UnivDto> getUnivById(@PathVariable Long id) {
         UnivDto univDto = univService.getUnivById(id);
         return ResponseEntity.ok(univDto);
     }
 
 
-    @GetMapping("/{name}") // Univ 조회 (이름으로 조회)
+    @GetMapping("/name/{name}") // Univ 조회 (이름으로 조회)
     public ResponseEntity<UnivDto> getUnivByName(@PathVariable String name) {
         UnivDto univDto = univService.getUnivByName(name);
         return ResponseEntity.ok(univDto);

@@ -1,78 +1,300 @@
 package com.tave.camchelin.domain.users.service;
 
+import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
+import com.tave.camchelin.domain.board_posts.entity.BoardPost;
+import com.tave.camchelin.domain.board_posts.repository.BoardPostRepository;
+import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
+import com.tave.camchelin.domain.bookmarks.repository.BookmarkRepository;
+import com.tave.camchelin.domain.communities.entity.Community;
+import com.tave.camchelin.domain.communities.repository.CommunityRepository;
+import com.tave.camchelin.domain.places.dto.PlaceDto;
+import com.tave.camchelin.domain.places.entity.Place;
+import com.tave.camchelin.domain.places.repository.PlaceRepository;
+import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
+import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
+import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
+import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import com.tave.camchelin.domain.users.dto.UserDto;
+import com.tave.camchelin.domain.users.entity.User;
+import com.tave.camchelin.domain.users.repository.UserRepository;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
-public class UserServiceTest {
+@Transactional
+class UserServiceTest {
 
     @Autowired
     private UserService userService;
 
-    @Test
-    @Transactional
-        // 테스트 후 트랜잭션 롤백
-    void testRegisterUser() {
-        String username = "testUser";
-        String password = "password123";
-        String nickname = "Test Nickname";
-        Univ univ = Univ.builder()
-                .name("Test University")
-                .build();
+    @Autowired
+    private UserRepository userRepository;
 
-        UserDto userDto = UserDto.builder()
-                .username(username)
-                .password(password)
-                .nickname(nickname)
-                .univ(univ)
-                .build();
+    @Autowired
+    private UnivRepository univRepository;
 
-        UserDto savedUserDto = userService.registerUser(userDto);
+    @Autowired
+    private PlaceRepository placeRepository;
 
-        assertNotNull(savedUserDto.getId());  // 사용자 ID가 생성되었는지 확인
+    @Autowired
+    private BookmarkRepository bookmarkRepository;
+
+    @Autowired
+    private BoardPostRepository boardPostRepository;
+
+    @Autowired
+    private ReviewPostRepository reviewPostRepository;
+
+    @Autowired
+    private CommunityRepository communityRepository;
+
+    @BeforeEach
+    void setup() {
+        Univ univ = univRepository.findById(1L)
+                .orElseThrow(() -> new IllegalStateException("대학 정보가 존재하지 않습니다."));
+        UserDto userDto = new UserDto(null, "testUser2", "password", "nickname", 1L);
+        User user = userDto.toEntity(univ);
+        userRepository.save(user);
     }
 
     @Test
-    @Transactional
-    void testUpdateUser() {
+    void registerUser_ShouldRegisterSuccessfully_WhenValidDataProvided() {
+        // Given
+        UserDto userDto = new UserDto(null, "newUser", "password", "newNickname", 1L);
 
-        String username = "testUser";
-        String password = "password123";
-        String nickname = "Test Nickname";
-        Univ univ = Univ.builder()
-                .name("Test University")
-                .build();;
+        // When
+        UserDto result = userService.registerUser(userDto);
 
-        // 사용자 생성
-        UserDto userDto = UserDto.builder()
-                .username(username)
-                .password(password)
-                .nickname(nickname)
-                .univ(univ)
-                .build();
-
-        // 변경할 내용 준비 (UserDto)
-        String updatedNickname = "Updated Nickname";
-        String updatedPassword = "UpdatedPassword123";
-        UserDto updateDto = new UserDto(
-                userDto.getId(),  // 기존 사용자 ID
-                userDto.getUsername(),
-                updatedPassword,
-                updatedNickname,
-                userDto.getUniv()
-        );
-
-        // 서비스 호출
-        UserDto updatedUserDto = userService.updateUser(userDto);
-
-        // 검증
-        assertNotNull(updatedUserDto.getId());  // id가 반환되는지 확인
-
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getUsername()).isEqualTo("newUser");
+        assertThat(userRepository.findByUsername("newUser")).isPresent();
     }
+
+    @Test
+    void registerUser_ShouldThrowException_WhenUsernameAlreadyExists() {
+        // Given
+        UserDto userDto = new UserDto(null, "testUser", "password", "nickname", 1L);
+
+        // When & Then
+        assertThatThrownBy(() -> userService.registerUser(userDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("이미 존재하는 사용자입니다.");
+    }
+
+    @Test
+    void getUserProfile_ShouldReturnUserProfile_WhenUserExists() {
+        // Given
+        User existingUser = userRepository.findByUsername("testUser").orElseThrow();
+        Long userId = existingUser.getId();
+
+        // When
+        UserDto result = userService.getUserProfile(userId);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getUsername()).isEqualTo("testUser");
+    }
+
+    @Test
+    void getUserProfile_ShouldThrowException_WhenUserDoesNotExist() {
+        // When & Then
+        assertThatThrownBy(() -> userService.getUserProfile(999L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("사용자 정보를 찾지 못했습니다.");
+    }
+
+    @Test
+    void updateUser_ShouldUpdateUserDetails_WhenValidDataProvided() {
+        // Given
+        User existingUser = userRepository.findByUsername("testUser").orElseThrow();
+        Long userId = existingUser.getId();
+        UserDto userDto = new UserDto(userId, "updatedUser", "newPassword", "newNickname", 1L);
+
+        // When
+        UserDto result = userService.updateUser(userDto);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getUsername()).isEqualTo("updatedUser");
+        assertThat(result.getNickname()).isEqualTo("newNickname");
+    }
+
+    @Test
+    void updateUser_ShouldThrowException_WhenUserDoesNotExist() {
+        // Given
+        UserDto userDto = new UserDto(999L, "nonexistentUser", "password", "nickname", 1L);
+
+        // When & Then
+        assertThatThrownBy(() -> userService.updateUser(userDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("사용자 정보를 찾지 못했습니다.");
+    }
+
+    @Test
+    void getUserBookmarks_ShouldReturnBookmarks_WhenUserHasBookmarks() {
+        // Given
+        User user = userRepository.findByUsername("testUser").orElseThrow();
+        Place place = placeRepository.findById(1L).orElseThrow();
+        bookmarkRepository.save(Bookmark.builder()
+                .user(user)
+                .place(place)
+                .build());
+
+        // When
+        List<PlaceDto> bookmarks = userService.getUserBookmarks(user.getId());
+
+        // Then
+        assertThat(bookmarks).isNotNull().hasSize(1);
+        assertThat(bookmarks.get(0).getName()).isEqualTo("안녕유부");
+    }
+
+    @Test
+    void addBookmark_ShouldAddBookmarkSuccessfully_WhenValidDataProvided() {
+        // Given
+        User user = userRepository.findByUsername("testUser").orElseThrow();
+        Long userId = user.getId();
+        Long placeId = 1L;
+
+        // When
+        userService.addBookmark(userId, placeId);
+
+        // Then
+        List<Bookmark> bookmarks = bookmarkRepository.findByUserId(userId);
+        assertThat(bookmarks).hasSize(1);
+        assertThat(bookmarks.get(0).getPlace().getId()).isEqualTo(placeId);
+    }
+
+    @Test
+    void removeBookmark_ShouldRemoveBookmarkSuccessfully_WhenBookmarkExists() {
+        // Given
+        User user = userRepository.findByUsername("testUser").orElseThrow();
+        Place place = placeRepository.findById(1L).orElseThrow();
+        bookmarkRepository.save(Bookmark.builder()
+                .user(user)
+                .place(place)
+                .build());
+
+
+        // When
+        userService.removeBookmark(user.getId(), place.getId());
+
+        // Then
+        List<Bookmark> bookmarks = bookmarkRepository.findByUserId(user.getId());
+        assertThat(bookmarks).isEmpty();
+    }
+
+    @Test
+    void removeBookmark_ShouldThrowException_WhenBookmarkDoesNotExist() {
+        // Given
+        User user = userRepository.findByUsername("testUser").orElseThrow();
+        Long userId = user.getId();
+        Long placeId = 999L;
+
+        // When & Then
+        assertThatThrownBy(() -> userService.removeBookmark(userId, placeId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("맛집 정보를 찾지 못했습니다.");
+    }
+
+
+
+    @Test
+    void getUserBoardPosts_ShouldReturnBoardPosts_WhenUserHasBoardPosts() {
+        // Given
+        User user = userRepository.findByUsername("testUser").orElseThrow();
+        Community community = communityRepository.findById(1L).orElseThrow();
+
+        boardPostRepository.save(BoardPost.builder()
+                .user(user)
+                .community(community)
+                .title("Test Board Post 1")
+                .content("Content of Board Post 1")
+                .build());
+        boardPostRepository.save(BoardPost.builder()
+                .user(user)
+                .community(community)
+                .title("Test Board Post 2")
+                .content("Content of Board Post 2")
+                .build());
+
+        // When
+        List<BoardPostDto> boardPosts = userService.getUserBoardPosts(user.getId());
+
+        // Then
+        assertThat(boardPosts).isNotNull().hasSize(2);
+        assertThat(boardPosts.get(0).getTitle()).isEqualTo("Test Board Post 1");
+        assertThat(boardPosts.get(1).getTitle()).isEqualTo("Test Board Post 2");
+    }
+
+    @Test
+    void getUserBoardPosts_ShouldReturnEmptyList_WhenUserHasNoBoardPosts() {
+        // Given
+        User user = userRepository.findByUsername("testUser").orElseThrow();
+
+        // When
+        List<BoardPostDto> boardPosts = userService.getUserBoardPosts(user.getId());
+
+        // Then
+        assertThat(boardPosts).isNotNull().isEmpty();
+    }
+
+    @Test
+    void getUserReviewPosts_ShouldReturnReviewPosts_WhenUserHasReviewPosts() {
+        // Given
+        User user = userRepository.findByUsername("testUser").orElseThrow();
+        Community community = communityRepository.findById(2L).orElseThrow();
+        Place place = placeRepository.findById(1L).orElseThrow();
+        Univ univ = univRepository.findById(1L).orElseThrow();
+
+
+        reviewPostRepository.save(ReviewPost.builder()
+                .user(user)
+                .community(community)
+                .place(place)
+                .univ(univ)
+                .menu("Menu 1")
+                .price(10000)
+                .content("Review Content 1")
+                .build());
+        reviewPostRepository.save(ReviewPost.builder()
+                .user(user)
+                .community(community)
+                .place(place)
+                .univ(univ)
+                .menu("Menu 2")
+                .price(20000)
+                .content("Review Content 2")
+                .build());
+
+        // When
+        List<ReviewPostDto> reviewPosts = userService.getUserReviewPosts(user.getId());
+
+        // Then
+        assertThat(reviewPosts).isNotNull().hasSize(2);
+        assertThat(reviewPosts.get(0).getMenu()).isEqualTo("Menu 1");
+        assertThat(reviewPosts.get(1).getMenu()).isEqualTo("Menu 2");
+    }
+
+    @Test
+    void getUserReviewPosts_ShouldReturnEmptyList_WhenUserHasNoReviewPosts() {
+        // Given
+        User user = userRepository.findByUsername("testUser").orElseThrow();
+
+        // When
+        List<ReviewPostDto> reviewPosts = userService.getUserReviewPosts(user.getId());
+
+        // Then
+        assertThat(reviewPosts).isNotNull().isEmpty();
+    }
+
 }

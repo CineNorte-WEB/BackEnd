@@ -37,5 +37,12 @@ public class Comment extends BaseEntity {
     private Comment parentComment;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Comment> childComments = new ArrayList<>();
+
+    public void edit(String content) {
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
+    }
 }
