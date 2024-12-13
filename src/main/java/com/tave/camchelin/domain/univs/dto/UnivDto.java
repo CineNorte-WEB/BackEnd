@@ -19,16 +19,14 @@ public class UnivDto {
     private Long id;
     private String name;
     private String imageUrl;
-    private Float latitude;
-    private Float longitude;
+    private String address;
     private List<PlaceDto> places;
 
     public Univ toEntity() {
         return Univ.builder()
                 .name(this.name)
                 .imageUrl(this.imageUrl)
-                .latitude(this.latitude)
-                .longitude(this.longitude)
+                .address(this.address)
                 .build();
     }
 
@@ -37,8 +35,7 @@ public class UnivDto {
                 .id(univ.getId())
                 .name(univ.getName())
                 .imageUrl(univ.getImageUrl())
-                .latitude(univ.getLatitude())
-                .longitude(univ.getLongitude())
+                .address(univ.getAddress())
                 .places(univ.getPlaces().stream()
                         .map(PlaceDto::fromEntity)
                         .collect(Collectors.toList()))

@@ -29,7 +29,7 @@ public class BoardPost extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id", nullable = false)
+    @JoinColumn(name = "community_id", nullable = false)
     private Community community;
 
     @Column(nullable = false)
