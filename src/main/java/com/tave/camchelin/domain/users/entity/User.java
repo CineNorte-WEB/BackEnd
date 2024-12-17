@@ -29,6 +29,9 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true) // NOT NULL 및 UNIQUE 제약 조건
     private String username;
 
+    @Column(nullable = false, unique = true, length = 30)
+    private String email;
+
     @Column(nullable = false) // NOT NULL
     private String password;
 
