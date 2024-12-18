@@ -18,7 +18,6 @@ import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import com.tave.camchelin.domain.users.dto.UserDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,8 +75,8 @@ class UserServiceTest {
 
         // Then
         assertThat(result).isNotNull();
-        assertThat(result.getUsername()).isEqualTo("newUser");
-        assertThat(userRepository.findByUsername("newUser")).isPresent();
+        assertThat(result.getEmail()).isEqualTo("newUser");
+        assertThat(userRepository.findByEmail("newUser")).isPresent();
     }
 
     @Test
@@ -94,7 +93,7 @@ class UserServiceTest {
     @Test
     void getUserProfile_ShouldReturnUserProfile_WhenUserExists() {
         // Given
-        User existingUser = userRepository.findByUsername("testUser").orElseThrow();
+        User existingUser = userRepository.findByEmail("testUser").orElseThrow();
         Long userId = existingUser.getId();
 
         // When
@@ -102,7 +101,7 @@ class UserServiceTest {
 
         // Then
         assertThat(result).isNotNull();
-        assertThat(result.getUsername()).isEqualTo("testUser");
+        assertThat(result.getEmail()).isEqualTo("testUser");
     }
 
     @Test
@@ -116,7 +115,7 @@ class UserServiceTest {
     @Test
     void updateUser_ShouldUpdateUserDetails_WhenValidDataProvided() {
         // Given
-        User existingUser = userRepository.findByUsername("testUser").orElseThrow();
+        User existingUser = userRepository.findByEmail("testUser").orElseThrow();
         Long userId = existingUser.getId();
         UserDto userDto = new UserDto(userId, "updatedUser", "newPassword", "newNickname", 1L);
 
@@ -125,7 +124,7 @@ class UserServiceTest {
 
         // Then
         assertThat(result).isNotNull();
-        assertThat(result.getUsername()).isEqualTo("updatedUser");
+        assertThat(result.getEmail()).isEqualTo("updatedUser");
         assertThat(result.getNickname()).isEqualTo("newNickname");
     }
 
@@ -143,7 +142,7 @@ class UserServiceTest {
     @Test
     void getUserBookmarks_ShouldReturnBookmarks_WhenUserHasBookmarks() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findById(1L).orElseThrow();
         bookmarkRepository.save(Bookmark.builder()
                 .user(user)
@@ -161,7 +160,7 @@ class UserServiceTest {
     @Test
     void addBookmark_ShouldAddBookmarkSuccessfully_WhenValidDataProvided() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Long userId = user.getId();
         Long placeId = 1L;
 
@@ -177,7 +176,7 @@ class UserServiceTest {
     @Test
     void removeBookmark_ShouldRemoveBookmarkSuccessfully_WhenBookmarkExists() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findById(1L).orElseThrow();
         bookmarkRepository.save(Bookmark.builder()
                 .user(user)
@@ -196,7 +195,7 @@ class UserServiceTest {
     @Test
     void removeBookmark_ShouldThrowException_WhenBookmarkDoesNotExist() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Long userId = user.getId();
         Long placeId = 999L;
 
@@ -211,7 +210,7 @@ class UserServiceTest {
     @Test
     void getUserBoardPosts_ShouldReturnBoardPosts_WhenUserHasBoardPosts() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findById(1L).orElseThrow();
 
         boardPostRepository.save(BoardPost.builder()
@@ -239,7 +238,7 @@ class UserServiceTest {
     @Test
     void getUserBoardPosts_ShouldReturnEmptyList_WhenUserHasNoBoardPosts() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
 
         // When
         List<BoardPostDto> boardPosts = userService.getUserBoardPosts(user.getId());
@@ -251,7 +250,7 @@ class UserServiceTest {
     @Test
     void getUserReviewPosts_ShouldReturnReviewPosts_WhenUserHasReviewPosts() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findById(2L).orElseThrow();
         Place place = placeRepository.findById(1L).orElseThrow();
         Univ univ = univRepository.findById(1L).orElseThrow();
@@ -288,7 +287,7 @@ class UserServiceTest {
     @Test
     void getUserReviewPosts_ShouldReturnEmptyList_WhenUserHasNoReviewPosts() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
 
         // When
         List<ReviewPostDto> reviewPosts = userService.getUserReviewPosts(user.getId());

@@ -61,7 +61,7 @@ class ReviewPostServiceTest {
     @Test
     void writeReviewPost_ShouldSaveReviewPost() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
         Univ univ = univRepository.findById(3L).orElseThrow();
@@ -80,7 +80,7 @@ class ReviewPostServiceTest {
     @Test
     void getReviewPosts_ShouldReturnAllReviews() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
         Univ univ = univRepository.findById(3L).orElseThrow();
@@ -99,7 +99,7 @@ class ReviewPostServiceTest {
     @Test
     void getReviewPostById_ShouldReturnSpecificReview() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
         Univ univ = univRepository.findById(3L).orElseThrow();
@@ -117,7 +117,7 @@ class ReviewPostServiceTest {
     @Test
     void editReviewPost_ShouldUpdateReviewDetails() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
         Univ univ = univRepository.findById(3L).orElseThrow();
@@ -142,7 +142,7 @@ class ReviewPostServiceTest {
     @Test
     void deleteReviewPost_ShouldRemoveReview() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
         Univ univ = univRepository.findById(3L).orElseThrow();
@@ -159,7 +159,7 @@ class ReviewPostServiceTest {
     @Test
     void getReviewsByPlace_ShouldReturnReviewsForSpecificPlace() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
         Univ univ = univRepository.findById(3L).orElseThrow();

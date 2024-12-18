@@ -27,9 +27,6 @@ public class User extends BaseEntity {
     private Univ univ;
 
     @Column(nullable = false, unique = true) // NOT NULL 및 UNIQUE 제약 조건
-    private String username;
-
-    @Column(nullable = false, unique = true, length = 30)
     private String email;
 
     @Column(nullable = false) // NOT NULL
@@ -44,8 +41,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewPost> reviewPosts = new ArrayList<>();
 
-    public void update(String username, String password, String nickname, Univ univ) {
-        this.username = username;
+    public void update(String email, String password, String nickname, Univ univ) {
+        this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.univ= univ;

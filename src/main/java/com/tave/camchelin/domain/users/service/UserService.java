@@ -35,7 +35,7 @@ public class UserService {
     @Transactional
     public UserDto registerUser(UserDto userDto) {
         // 비즈니스 로직 구현
-        if (userRepository.findByUsername(userDto.getUsername()).isPresent()) {
+        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
         };
 
@@ -65,7 +65,7 @@ public class UserService {
 
 
         user.update(
-                userDto.getUsername(),
+                userDto.getEmail(),
                 userDto.getPassword(),
                 userDto.getNickname(),
                 univ
