@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -43,6 +44,7 @@ public class SecurityConfig {
         http	.csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("user/signup", "/", "/login", "/album/init").permitAll()
                         .anyRequest().authenticated())
@@ -83,26 +85,23 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {//AuthenticationManager 등록
         DaoAuthenticationProvider provider = daoAuthenticationProvider();//DaoAuthenticationProvider 사용
-        //provider.setPasswordEncoder(passwordEncoder());//PasswordEncoder로는 PasswordEncoderFactories.createDelegatingPasswordEncoder() 사용
         return new ProviderManager(provider);
     }
 
-    @Bean
-    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-        return new LoginSuccessJWTProvideHandler();
-    }
-
-    @Bean
-    public LoginFailureHandler loginFailureHandler(){
-        return new LoginFailureHandler();
-    }
+//    @Bean
+//    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
+//        return new LoginSuccessJWTProvideHandler();
+//    }
+//
+//    @Bean
+//    public LoginFailureHandler loginFailureHandler(){
+//        return new LoginFailureHandler();
+//    }
 
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter() throws Exception {
         JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter = new JsonUsernamePasswordAuthenticationFilter(objectMapper);
         jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
-        jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
-        jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
         return jsonUsernamePasswordLoginFilter;
     }
 
