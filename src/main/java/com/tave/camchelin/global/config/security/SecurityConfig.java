@@ -1,8 +1,11 @@
 package com.tave.camchelin.global.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tave.camchelin.domain.users.repository.UserRepository;
+import com.tave.camchelin.global.jwt.JwtAuthenticationProcessingFilter;
+import com.tave.camchelin.global.jwt.JwtService;
+import com.tave.camchelin.global.jwt.LoginSuccessJWTProvideHandler;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,11 +14,8 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -37,6 +37,8 @@ public class SecurityConfig {
 //	}
     private final UserDetailsServiceImpl userDetailsService;
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
     // 특정 HTTP 요청에 대한 웹 기반 보안 구성
     @Bean
@@ -44,11 +46,11 @@ public class SecurityConfig {
         http	.csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
+//                .addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("user/signup", "/", "/login", "/album/init").permitAll()
+                        .requestMatchers("/feed/**", "/albums/**", "/photo/**", "/user/signup", "/", "/login", "/album/init").permitAll()
                         .anyRequest().authenticated())
-                // 폼 로그인은 현재 사용하지 않음
+                // 폼 로그인
 //				.formLogin(formLogin -> formLogin
 //						.loginPage("/login")
 //						.defaultSuccessUrl("/home"))
@@ -58,6 +60,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
+        http
+                .addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class) // 추가 : 커스터마이징 된 필터를 SpringSecurityFilterChain에 등록
+                .addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -88,20 +93,29 @@ public class SecurityConfig {
         return new ProviderManager(provider);
     }
 
-//    @Bean
-//    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-//        return new LoginSuccessJWTProvideHandler();
-//    }
-//
-//    @Bean
-//    public LoginFailureHandler loginFailureHandler(){
-//        return new LoginFailureHandler();
-//    }
+    @Bean
+    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
+        return new LoginSuccessJWTProvideHandler(jwtService, userRepository);
+    }
+
+    @Bean
+    public LoginFailureHandler loginFailureHandler(){
+        return new LoginFailureHandler();
+    }
 
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter() throws Exception {
         JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter = new JsonUsernamePasswordAuthenticationFilter(objectMapper);
         jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
+        jsonUsernamePasswordLoginFilter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
+        jsonUsernamePasswordLoginFilter.setAuthenticationFailureHandler(loginFailureHandler());
+        return jsonUsernamePasswordLoginFilter;
+    }
+
+    @Bean
+    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
+        JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter = new JwtAuthenticationProcessingFilter(jwtService, userRepository);
+
         return jsonUsernamePasswordLoginFilter;
     }
 
