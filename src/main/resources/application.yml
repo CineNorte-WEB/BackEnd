@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    include: jwt
+
+jwt:
+  secret: ${JWT_SECRET}
+  access:
+    expiration: 80
+    header: Authorization
+  refresh:
+    expiration: 90
+    header: Authorization-refresh
