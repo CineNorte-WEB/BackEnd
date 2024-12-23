@@ -38,7 +38,6 @@ public class User extends BaseEntity {
     @Column(nullable = false) // NOT NULL
     private String nickname;
 
-    private LocalDate createdAt;
 
     @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks = new ArrayList<>();
