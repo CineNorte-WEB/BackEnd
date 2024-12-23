@@ -1,6 +1,3 @@
-#FROM ubuntu:latest
-LABEL authors="HYNAM"
-
 # jdk17 Image Start
 FROM openjdk:17
 

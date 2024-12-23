@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tave.camchelin.domain.users.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -50,6 +51,7 @@ public class JwtServiceImpl implements JwtService{
 
     private final UserRepository usersRepository;
     private final ObjectMapper objectMapper;
+
 
     //메서드
     @Override

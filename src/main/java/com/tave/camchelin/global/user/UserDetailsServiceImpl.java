@@ -1,7 +1,8 @@
-package com.tave.camchelin.global.config.security;
+package com.tave.camchelin.global.user;
 
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
+import com.tave.camchelin.global.user.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

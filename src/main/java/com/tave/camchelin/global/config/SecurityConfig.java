@@ -1,7 +1,10 @@
-package com.tave.camchelin.global.config.security;
+package com.tave.camchelin.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tave.camchelin.domain.users.repository.UserRepository;
+import com.tave.camchelin.global.security.JsonUsernamePasswordAuthenticationFilter;
+import com.tave.camchelin.global.security.LoginFailureHandler;
+import com.tave.camchelin.global.user.UserDetailsServiceImpl;
 import com.tave.camchelin.global.jwt.JwtAuthenticationProcessingFilter;
 import com.tave.camchelin.global.jwt.JwtService;
 import com.tave.camchelin.global.jwt.LoginSuccessJWTProvideHandler;

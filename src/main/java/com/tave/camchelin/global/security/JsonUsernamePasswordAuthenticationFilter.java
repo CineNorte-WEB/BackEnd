@@ -1,4 +1,4 @@
-package com.tave.camchelin.global.config.security;
+package com.tave.camchelin.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;

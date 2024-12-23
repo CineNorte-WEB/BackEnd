@@ -1,4 +1,4 @@
-package com.tave.camchelin.global.config.security;
+package com.tave.camchelin.global.user;
 
 import com.tave.camchelin.domain.users.entity.User;
 import org.springframework.security.core.GrantedAuthority;

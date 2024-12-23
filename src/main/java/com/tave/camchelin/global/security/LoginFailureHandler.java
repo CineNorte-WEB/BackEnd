@@ -1,4 +1,4 @@
-package com.tave.camchelin.global.config.security;
+package com.tave.camchelin.global.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

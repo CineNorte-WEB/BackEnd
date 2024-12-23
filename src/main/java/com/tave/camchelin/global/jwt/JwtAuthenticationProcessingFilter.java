@@ -2,7 +2,7 @@ package com.tave.camchelin.global.jwt;
 
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
-import com.tave.camchelin.global.config.security.UserDetailsImpl;
+import com.tave.camchelin.global.user.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
