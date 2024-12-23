@@ -1,0 +1,24 @@
+
+services:
+  app:
+    #image: ${DOCKERHUB_USERNAME}/hackathon
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      ACCESS_KEY: ${ACCESS_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      BUCKET_NAME: ${BUCKET_NAME}
+      REGION: ${REGION}
+
+      hibernate_ddl_auto: create
+#      REDIS_HOST: redis
+#    depends_on:
+#      - redis
+
+#  redis:
+#    image: "redis:latest"
+#    ports:
+#      - "6379:6379"
