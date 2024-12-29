@@ -9,7 +9,6 @@ import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ class BoardPostServiceTest {
                 .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾을 수 없습니다."));
 
         User user = User.builder()
-                .username("testUser")
+                .email("testUser@test.co.kr")
                 .password("password")
                 .nickname("nickname")
                 .univ(univ)
@@ -57,7 +56,7 @@ class BoardPostServiceTest {
     @Test
     void getBoardPosts_ShouldReturnBoardPosts_WhenBoardPostsExist2() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
         BoardPostDto boardPostDto = new BoardPostDto(null, "Test Title", "Test Content", user, community);
@@ -72,7 +71,7 @@ class BoardPostServiceTest {
             System.out.println("ID: " + post.getId());
             System.out.println("Title: " + post.getTitle());
             System.out.println("Content: " + post.getContent());
-            System.out.println("User: " + (post.getUser() != null ? post.getUser().getUsername() : "null"));
+            System.out.println("User: " + (post.getUser() != null ? post.getUser().getEmail() : "null"));
             System.out.println("Community: " + (post.getCommunity() != null ? post.getCommunity().getName() : "null"));
             System.out.println("---------------------------------");
         });
@@ -89,7 +88,7 @@ class BoardPostServiceTest {
     @Test
     void getBoardPosts_ShouldReturnBoardPosts_WhenBoardPostsExist() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findById(1L).orElseThrow();
 
         BoardPostDto boardPostDto = new BoardPostDto(null, "Test Title", "Test Content", user, community);
@@ -108,7 +107,7 @@ class BoardPostServiceTest {
     @Test
     void getBoardPostById_ShouldReturnBoardPost_WhenBoardPostExists() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
         BoardPostDto boardPostDto = new BoardPostDto(null, "Test Title", "Test Content", user, community);
@@ -137,7 +136,7 @@ class BoardPostServiceTest {
     @Test
     void writeBoardPost_ShouldCreateBoardPost_WhenValidDataProvided() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
         BoardPostDto boardPostDto = new BoardPostDto(null, "New Title", "New Content", user, community);
@@ -157,7 +156,7 @@ class BoardPostServiceTest {
         Community community = communityRepository.findByName("boardPost").orElseThrow();
         User user = User.builder()
                 .id(999L) // 존재하지 않는 ID
-                .username("nonexistentUser")
+                .email("nonexistentUser")
                 .password("password")
                 .nickname("nickname")
                 .univ(null) // Univ는 null로 설정
@@ -178,7 +177,7 @@ class BoardPostServiceTest {
     @Test
     void editBoardPost_ShouldEditBoardPost_WhenValidDataProvided() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
         BoardPostDto boardPostDto = new BoardPostDto(null, "Old Title", "Old Content", user, community);
@@ -199,7 +198,7 @@ class BoardPostServiceTest {
     @Test
     void deleteBoardPost_ShouldDeleteBoardPost_WhenBoardPostExists() {
         // Given
-        User user = userRepository.findByUsername("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
         BoardPostDto boardPostDto = new BoardPostDto(null, "Title to Delete", "Content", user, community);

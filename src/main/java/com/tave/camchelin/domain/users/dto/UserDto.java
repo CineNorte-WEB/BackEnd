@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserDto {
     private Long id;
-    private String username;
+    private String email;
     private String password;
     private String nickname;
     private Long univId;
 
     public User toEntity(Univ univ) {
         return User.builder()
-                .username(this.username)
+                .email(this.email)
                 .password(this.password)
                 .nickname(this.nickname)
                 .univ(univ)
@@ -30,7 +30,7 @@ public class UserDto {
     public static UserDto fromEntity(User user) {
         return UserDto.builder()
                 .id(user.getId())
-                .username(user.getUsername())
+                .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
                 .univId(user.getUniv().getId())
