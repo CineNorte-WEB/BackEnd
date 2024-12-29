@@ -2,11 +2,11 @@ package com.tave.camchelin.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tave.camchelin.domain.users.repository.UserRepository;
+import com.tave.camchelin.global.jwt.JwtServiceImpl;
 import com.tave.camchelin.global.security.JsonUsernamePasswordAuthenticationFilter;
 import com.tave.camchelin.global.security.LoginFailureHandler;
 import com.tave.camchelin.global.user.UserDetailsServiceImpl;
 import com.tave.camchelin.global.jwt.JwtAuthenticationProcessingFilter;
-import com.tave.camchelin.global.jwt.JwtService;
 import com.tave.camchelin.global.jwt.LoginSuccessJWTProvideHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -41,17 +41,17 @@ public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtService;
 
     // 특정 HTTP 요청에 대한 웹 기반 보안 구성
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http	.csrf(AbstractHttpConfigurer::disable)
+        http    .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
 //                .addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/feed/**", "/albums/**", "/photo/**", "/user/signup", "/", "/login", "/album/init").permitAll()
+                        .requestMatchers("/hello").permitAll()
                         .anyRequest().authenticated())
                 // 폼 로그인
 //				.formLogin(formLogin -> formLogin

@@ -55,7 +55,7 @@ class CommentServiceTest {
                 .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾을 수 없습니다."));
 
         User user = User.builder()
-                .username("testUser")
+                .email("testUser")
                 .password("password")
                 .nickname("nickname")
                 .univ(univ)

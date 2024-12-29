@@ -38,8 +38,8 @@ public class JwtServiceImpl implements JwtService{
     private long refreshTokenValidityInSeconds;
 
     @Value("${jwt.access.header}")
-
     private String accessHeader;
+
     @Value("${jwt.refresh.header}")
     private String refreshHeader;
 
@@ -49,8 +49,7 @@ public class JwtServiceImpl implements JwtService{
     private static final String USERNAME_CLAIM = "email";
     private static final String BEARER = "Bearer ";
 
-    private final UserRepository usersRepository;
-    private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
 
 
     //메서드
@@ -73,7 +72,7 @@ public class JwtServiceImpl implements JwtService{
 
     @Override
     public void updateRefreshToken(String email, String refreshToken) {
-        usersRepository.findByEmail(email)
+        userRepository.findByEmail(email)
                 .ifPresentOrElse(
                         users -> users.updateRefreshToken(refreshToken),
                         () -> new Exception("회원 조회 실패")
@@ -82,7 +81,7 @@ public class JwtServiceImpl implements JwtService{
 
     @Override
     public void destroyRefreshToken(String email) {
-        usersRepository.findByEmail(email)
+        userRepository.findByEmail(email)
                 .ifPresentOrElse(
                         users -> users.destroyRefreshToken(),
                         () -> new Exception("회원 조회 실패")

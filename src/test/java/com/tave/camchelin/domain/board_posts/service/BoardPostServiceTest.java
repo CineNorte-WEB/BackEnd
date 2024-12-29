@@ -45,7 +45,7 @@ class BoardPostServiceTest {
                 .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾을 수 없습니다."));
 
         User user = User.builder()
-                .username("testUser")
+                .email("testUser@test.co.kr")
                 .password("password")
                 .nickname("nickname")
                 .univ(univ)
@@ -156,7 +156,7 @@ class BoardPostServiceTest {
         Community community = communityRepository.findByName("boardPost").orElseThrow();
         User user = User.builder()
                 .id(999L) // 존재하지 않는 ID
-                .username("nonexistentUser")
+                .email("nonexistentUser")
                 .password("password")
                 .nickname("nickname")
                 .univ(null) // Univ는 null로 설정
