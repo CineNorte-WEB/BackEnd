@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
 //                .addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/hello").permitAll()
+                        .requestMatchers("/users/register","/hello", "/login", "/").permitAll()
                         .anyRequest().authenticated())
                 // 폼 로그인
 //				.formLogin(formLogin -> formLogin
@@ -61,8 +61,7 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true))
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http
                 .addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class) // 추가 : 커스터마이징 된 필터를 SpringSecurityFilterChain에 등록
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), JsonUsernamePasswordAuthenticationFilter.class);

@@ -15,6 +15,8 @@ import com.tave.camchelin.domain.users.dto.UserDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,8 @@ public class UserService {
     private final BookmarkRepository bookmarkRepository;
     private final BoardPostRepository boardPostRepository;
     private final ReviewPostRepository reviewPostRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Transactional
     public UserDto registerUser(UserDto userDto) {
@@ -43,7 +47,16 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾을 수 없습니다."));
 
 
-        User user = userDto.toEntity(univ);
+        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+
+        // User 엔티티 생성 및 저장
+        User user = User.builder()
+                .email(userDto.getEmail())
+                .password(encodedPassword) // 암호화된 비밀번호 사용
+                .nickname(userDto.getNickname())
+                .univ(univ)
+                .build();
+
         User savedUser = userRepository.save(user);
 
         return UserDto.fromEntity(savedUser);
@@ -135,6 +148,13 @@ public class UserService {
                 .stream()
                 .map(ReviewPostDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Long getUserIdByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. 이메일: " + email));
+        return user.getId();
     }
 
 }

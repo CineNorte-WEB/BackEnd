@@ -112,9 +112,9 @@ public class JwtServiceImpl implements JwtService{
 
     @Override
     public Optional<String> extractAccessToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(accessHeader)).filter(
-                accessToken -> accessToken.startsWith(BEARER)
-        ).map(accessToken -> accessToken.replace(BEARER, ""));
+        return Optional.ofNullable(request.getHeader(accessHeader))
+                .filter(accessToken -> accessToken.startsWith(BEARER))
+                .map(accessToken -> accessToken.replace(BEARER, ""));
     }
 
     @Override
@@ -128,7 +128,10 @@ public class JwtServiceImpl implements JwtService{
     public Optional<String> extractEmail(String accessToken) {
         try {
             return Optional.ofNullable(
-                    JWT.require(Algorithm.HMAC512(secret)).build().verify(accessToken).getClaim(USERNAME_CLAIM)
+                    JWT.require(Algorithm.HMAC512(secret))
+                            .build()
+                            .verify(accessToken)
+                            .getClaim(USERNAME_CLAIM)
                             .asString());
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -156,4 +159,6 @@ public class JwtServiceImpl implements JwtService{
             return false;
         }
     }
+
+
 }

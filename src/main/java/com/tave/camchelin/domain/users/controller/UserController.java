@@ -6,8 +6,10 @@ import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
 import com.tave.camchelin.domain.users.dto.UserDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.service.UserService;
+import com.tave.camchelin.global.jwt.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,8 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
+    private final JwtService jwtService;
 
     @PostMapping("/register") // 회원 등록
     public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
@@ -28,21 +32,28 @@ public class UserController {
     }
 
     @GetMapping("/profile") // 회원 정보 조회
-    public ResponseEntity<UserDto> getUserProfile(HttpServletRequest request) {
-        Long userId = (Long) request.getSession().getAttribute("userId");
+    public ResponseEntity<UserDto> getUserProfile(@RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
+
         if (userId == null) {
+            log.error("유효하지 않은 토큰입니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
         UserDto userDto = userService.getUserProfile(userId);
         return ResponseEntity.ok(userDto);
     }
 
     @PutMapping("/update") // 회원 정보 수정
-    public ResponseEntity<UserDto> updateUser(HttpServletRequest request, @RequestBody UserDto userDto) {
-        Long userId = (Long) request.getSession().getAttribute("userId"); // 세션에서 userId 추출
+    public ResponseEntity<UserDto> updateUser(@RequestHeader("Authorization") String token,
+                                              @RequestBody UserDto userDto) {
+        Long userId = extractUserIdFromToken(token);
+
         if (userId == null) {
+            log.error("유효하지 않은 토큰입니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
         userDto.setId(userId); // 수정할 사용자의 ID를 UserDto에 설정
         UserDto updatedUserDto = userService.updateUser(userDto);
         return ResponseEntity.ok(updatedUserDto);
@@ -54,46 +65,72 @@ public class UserController {
         return ResponseEntity.ok(bookmarks);
     }
 
-    @PostMapping("/{userId}/bookmarks/{placeId}") // 찜 추가
-    public ResponseEntity<Void> addBookmark(@PathVariable Long userId, @PathVariable Long placeId) {
+    @PostMapping("/bookmarks/{placeId}") // 현재 로그인 사용자의 북마크 추가
+    public ResponseEntity<Void> addBookmark(@RequestHeader("Authorization") String token,
+                                            @PathVariable Long placeId) {
+        Long userId = extractUserIdFromToken(token);
+
+        if (userId == null) {
+            log.error("유효하지 않은 토큰입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         userService.addBookmark(userId, placeId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{userId}/bookmarks/{placeId}") // 찜 삭제
-    public ResponseEntity<Void> removeBookmark(@PathVariable Long userId, @PathVariable Long placeId) {
+    @DeleteMapping("/bookmarks/{placeId}") // 현재 로그인 사용자의 북마크 삭제
+    public ResponseEntity<Void> removeBookmark(@RequestHeader("Authorization") String token,
+                                               @PathVariable Long placeId) {
+        Long userId = extractUserIdFromToken(token);
+
+        if (userId == null) {
+            log.error("유효하지 않은 토큰입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         userService.removeBookmark(userId, placeId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/boards")
-    public List<BoardPostDto> getUserBoards(HttpServletRequest request) {
-        // 세션에서 user 정보 가져오기
-        User user = (User) request.getSession().getAttribute("user");
+    @GetMapping("/boards") // 현재 로그인 사용자의 게시글 조회
+    public ResponseEntity<List<BoardPostDto>> getUserBoards(@RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
 
-        // 세션에 user 정보가 없으면 예외 처리
-        if (user == null) {
-            throw new IllegalArgumentException("로그인된 사용자가 아닙니다.");
+        if (userId == null) {
+            log.error("유효하지 않은 토큰입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // 사용자 ID로 작성한 게시글 목록을 가져옴
-        return userService.getUserBoardPosts(user.getId());
+        List<BoardPostDto> boardPosts = userService.getUserBoardPosts(userId);
+        return ResponseEntity.ok(boardPosts);
     }
 
     // 사용자가 작성한 리뷰 목록 조회
-    @GetMapping("/reviews")
-    public List<ReviewPostDto> getUserReviews(HttpServletRequest request) {
-        // 세션에서 user 정보 가져오기
-        User user = (User) request.getSession().getAttribute("user");
+    @GetMapping("/reviews") // 현재 로그인 사용자의 리뷰 조회
+    public ResponseEntity<List<ReviewPostDto>> getUserReviews(@RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
 
-        // 세션에 user 정보가 없으면 예외 처리
-        if (user == null) {
-            throw new IllegalArgumentException("로그인된 사용자가 아닙니다.");
+        if (userId == null) {
+            log.error("유효하지 않은 토큰입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // 사용자 ID로 작성한 리뷰 목록을 가져옴
-        return userService.getUserReviewPosts(user.getId());
+        List<ReviewPostDto> reviewPosts = userService.getUserReviewPosts(userId);
+        return ResponseEntity.ok(reviewPosts);
     }
 
+    // Helper 메서드: 토큰에서 userId 추출
+    private Long extractUserIdFromToken(String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            log.error("토큰이 없거나 올바르지 않은 형식입니다.");
+            return null;
+        }
+
+        String jwtToken = token.substring(7); // "Bearer " 제거
+        return jwtService.extractEmail(jwtToken)
+                .map(userService::getUserIdByEmail) // 이메일로 userId 조회
+                .orElse(null);
+    }
 
 }
