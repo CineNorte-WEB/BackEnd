@@ -31,8 +31,8 @@ logging:
 jwt:
   secret: ${JWT_SECRET}
   access:
-    expiration: 10000
+    expiration: 60 * 30
     header: Authorization
   refresh:
-    expiration: 90
+    expiration: 60 * 300
     header: Authorization-refresh

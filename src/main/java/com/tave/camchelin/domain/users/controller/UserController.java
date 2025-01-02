@@ -4,15 +4,12 @@ import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
 import com.tave.camchelin.domain.users.dto.UserDto;
-import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.service.UserService;
 import com.tave.camchelin.global.jwt.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
