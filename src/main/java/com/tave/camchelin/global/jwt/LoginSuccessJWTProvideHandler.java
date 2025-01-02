@@ -24,7 +24,7 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
                                         Authentication authentication) throws IOException, ServletException {
         String email = extractEmail(authentication);
         String accessToken = jwtService.createAccessToken(email);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
         usersRepository.findByEmail(email).ifPresent(

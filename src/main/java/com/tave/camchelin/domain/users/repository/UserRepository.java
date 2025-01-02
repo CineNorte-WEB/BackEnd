@@ -1,5 +1,6 @@
 package com.tave.camchelin.domain.users.repository;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.tave.camchelin.domain.users.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,4 +16,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     //boolean existsByNickName(String nickname);
 
     Optional<User> findByRefreshToken(String refreshToke);
+
 }

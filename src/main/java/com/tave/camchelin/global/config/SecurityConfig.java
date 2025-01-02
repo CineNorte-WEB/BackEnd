@@ -2,6 +2,7 @@ package com.tave.camchelin.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tave.camchelin.domain.users.repository.UserRepository;
+import com.tave.camchelin.global.jwt.JwtLogoutHandler;
 import com.tave.camchelin.global.jwt.JwtServiceImpl;
 import com.tave.camchelin.global.security.JsonUsernamePasswordAuthenticationFilter;
 import com.tave.camchelin.global.security.LoginFailureHandler;
@@ -9,8 +10,10 @@ import com.tave.camchelin.global.user.UserDetailsServiceImpl;
 import com.tave.camchelin.global.jwt.JwtAuthenticationProcessingFilter;
 import com.tave.camchelin.global.jwt.LoginSuccessJWTProvideHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -28,6 +31,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @EnableWebSecurity
 @EnableMethodSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     // 스프링 시큐리티 기능 비활성화 (H2 DB 접근을 위해)
@@ -42,6 +46,8 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
     private final JwtServiceImpl jwtService;
+    private final RedisTemplate<String, String> redisTemplate;
+
 
     // 특정 HTTP 요청에 대한 웹 기반 보안 구성
     @Bean
@@ -58,8 +64,10 @@ public class SecurityConfig {
 //						.loginPage("/login")
 //						.defaultSuccessUrl("/home"))
                 .logout((logout) -> logout
-                        .logoutSuccessUrl("/login")
-                        .invalidateHttpSession(true))
+                        .addLogoutHandler(jwtLogoutHandler()) // JwtLogoutHandler 추가
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")) // 세션 무효화 및 쿠키 삭제
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http
@@ -106,6 +114,11 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtLogoutHandler jwtLogoutHandler() {
+        return new JwtLogoutHandler(jwtService, redisTemplate, userRepository); // JwtLogoutHandler Bean 등록
+    }
+
+    @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter() throws Exception {
         JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter = new JsonUsernamePasswordAuthenticationFilter(objectMapper);
         jsonUsernamePasswordLoginFilter.setAuthenticationManager(authenticationManager());
@@ -116,9 +129,8 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter(){
-        JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter = new JwtAuthenticationProcessingFilter(jwtService, userRepository);
+        JwtAuthenticationProcessingFilter jsonUsernamePasswordLoginFilter = new JwtAuthenticationProcessingFilter(jwtService, userRepository, redisTemplate);
 
         return jsonUsernamePasswordLoginFilter;
     }
-
 }

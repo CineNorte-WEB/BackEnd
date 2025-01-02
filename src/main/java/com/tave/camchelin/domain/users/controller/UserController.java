@@ -31,7 +31,6 @@ public class UserController {
     @GetMapping("/profile") // 회원 정보 조회
     public ResponseEntity<UserDto> getUserProfile(@RequestHeader("Authorization") String token) {
         Long userId = extractUserIdFromToken(token);
-
         if (userId == null) {
             log.error("유효하지 않은 토큰입니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

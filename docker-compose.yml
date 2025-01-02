@@ -18,7 +18,7 @@ services:
       BUCKET_NAME: ${BUCKET_NAME}
       REGION: ${REGION}
 
-      hibernate_ddl_auto: create
+      hibernate_ddl_auto: update
 #      REDIS_HOST: redis
 #    depends_on:
 #      - redis

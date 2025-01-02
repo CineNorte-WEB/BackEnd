@@ -24,6 +24,12 @@ spring:
   profiles:
     include: jwt
 
+  data:
+    redis:
+      host: localhost       # Redis 서버 호스트 (기본값 localhost)
+      port: 6379            # Redis 서버 포트 (기본값 6379)
+      password:   # 비밀번호 설정 (설정된 경우)
+
 logging:
   level:
     org.hibernate.orm.jdbc.bind: TRACE
@@ -31,8 +37,10 @@ logging:
 jwt:
   secret: ${JWT_SECRET}
   access:
-    expiration: 60 * 30
+    expiration: 1800  #30분
     header: Authorization
   refresh:
-    expiration: 60 * 300
-    header: Authorization-refresh
+    expiration: 18000 #300분
+    header: Refresh
+
+
