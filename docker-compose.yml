@@ -1,7 +1,7 @@
 
 services:
   app:
-    image: ${DOCKERHUB_USERNAME}/camchelin
+    image: tjdgus3488/camchelin
     build: .
     ports:
       - "8080:8080"
