@@ -33,7 +33,7 @@ public class UserDto {
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
-                .univId(user.getUniv().getId())
+                .univId(user.getUniv() != null ? user.getUniv().getId() : null)
                 .build();
     }
 }

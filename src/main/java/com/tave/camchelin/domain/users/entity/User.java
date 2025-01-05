@@ -26,7 +26,7 @@ public class User extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "univ_id", nullable = false)
+    @JoinColumn(name = "univ_id")
     private Univ univ;
 
     @Column(nullable = false, unique = true) // NOT NULL 및 UNIQUE 제약 조건

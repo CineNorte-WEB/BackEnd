@@ -43,11 +43,9 @@ public class UserService {
             throw new IllegalArgumentException("이미 존재하는 사용자입니다.");
         };
 
-        Univ univ = univRepository.findById(userDto.getUnivId())
-                .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾을 수 없습니다."));
-
-
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+
+        Univ univ = null;
 
         // User 엔티티 생성 및 저장
         User user = User.builder()
