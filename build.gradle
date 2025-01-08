@@ -53,6 +53,17 @@ dependencies {
 
 	// Spring Data Redis 의존성 추가
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// Spring WebFlux (WebClient 사용)
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+	// Jackson (JSON 직렬화/역직렬화)
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	//mock 설정
+	testImplementation 'org.mockito:mockito-core:5.2.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
 }
 
 tasks.named('test') {
