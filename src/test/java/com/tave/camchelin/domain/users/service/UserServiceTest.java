@@ -16,14 +16,13 @@ import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import com.tave.camchelin.domain.users.dto.UserDto;
-import com.tave.camchelin.domain.users.dto.request.UpdateRequestDto;
+import com.tave.camchelin.domain.users.dto.request.UpdateRequestUserDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -119,7 +118,7 @@ class UserServiceTest {
         // Given
         User existingUser = userRepository.findByEmail("testUser").orElseThrow();
         Long userId = existingUser.getId();
-        UpdateRequestDto userDto = new UpdateRequestDto(userId, "updatedUser", "newNickname", 1L);
+        UpdateRequestUserDto userDto = new UpdateRequestUserDto(userId, "updatedUser", "newNickname", 1L);
 
         // When
         UserDto result = userService.updateUser(userDto);
@@ -133,7 +132,7 @@ class UserServiceTest {
     @Test
     void updateUser_ShouldThrowException_WhenUserDoesNotExist() {
         // Given
-        UpdateRequestDto userDto = new UpdateRequestDto(999L, "nonexistentUser", "nickname", 1L);
+        UpdateRequestUserDto userDto = new UpdateRequestUserDto(999L, "nonexistentUser", "nickname", 1L);
 
         // When & Then
         assertThatThrownBy(() -> userService.updateUser(userDto))
