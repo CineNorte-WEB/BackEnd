@@ -61,7 +61,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
 //                .addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/login", "/", "/hello", "/users/register", "/signin").permitAll() // 비로그인 유저에게 권한을 어디까지 줄것인가?
+                        .requestMatchers("/login", "/", "/hello", "/users/register", "/signin").permitAll() // 로그인한 유저에게만 서비스 제공
                         .anyRequest().authenticated())
                 // 폼 로그인
 //				.formLogin(formLogin -> formLogin

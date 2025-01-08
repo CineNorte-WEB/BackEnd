@@ -1,4 +1,4 @@
-package com.tave.camchelin.domain.review_analyses;
+package com.tave.camchelin.domain.review_analysis;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

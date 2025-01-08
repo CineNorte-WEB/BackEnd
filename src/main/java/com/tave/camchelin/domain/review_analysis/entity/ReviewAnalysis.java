@@ -1,8 +1,8 @@
-package com.tave.camchelin.domain.review_analyses.entity;
+package com.tave.camchelin.domain.review_analysis.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
 import com.tave.camchelin.domain.places.entity.Place;
-import com.tave.camchelin.domain.review_analyses.ListToJsonConverter;
+import com.tave.camchelin.domain.review_analysis.ListToJsonConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
