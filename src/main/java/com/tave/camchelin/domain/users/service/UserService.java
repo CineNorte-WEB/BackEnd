@@ -12,6 +12,7 @@ import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import com.tave.camchelin.domain.users.dto.UserDto;
+import com.tave.camchelin.domain.users.dto.request.UpdateRequestDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -68,16 +69,18 @@ public class UserService {
     }
 
     @Transactional
-    public UserDto updateUser(UserDto userDto) {
+    public UserDto updateUser(UpdateRequestDto userDto) {
         User user = userRepository.findById(userDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾지 못했습니다." ));
-        Univ univ = univRepository.findById(userDto.getUnivId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 대학입니다."));
 
+        Univ univ = null;
+        if (userDto.getUnivId() != null) {
+            univ = univRepository.findById(userDto.getUnivId())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 대학입니다."));
+        }
 
         user.update(
                 userDto.getEmail(),
-                userDto.getPassword(),
                 userDto.getNickname(),
                 univ
         );

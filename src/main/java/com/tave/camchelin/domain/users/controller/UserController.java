@@ -4,6 +4,7 @@ import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
 import com.tave.camchelin.domain.users.dto.UserDto;
+import com.tave.camchelin.domain.users.dto.request.UpdateRequestDto;
 import com.tave.camchelin.domain.users.service.UserService;
 import com.tave.camchelin.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class UserController {
 
     @PutMapping("/update") // 회원 정보 수정
     public ResponseEntity<UserDto> updateUser(@RequestHeader("Authorization") String token,
-                                              @RequestBody UserDto userDto) {
+                                              @RequestBody UpdateRequestDto userDto) {
         Long userId = extractUserIdFromToken(token);
 
         if (userId == null) {
