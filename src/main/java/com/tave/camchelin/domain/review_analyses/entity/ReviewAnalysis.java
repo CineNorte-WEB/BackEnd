@@ -2,12 +2,14 @@ package com.tave.camchelin.domain.review_analyses.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
 import com.tave.camchelin.domain.places.entity.Place;
-import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
+import com.tave.camchelin.domain.review_analyses.ListToJsonConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
-@Table(name = "review_analyses")
+@Table(name = "review_keywords") // 새 테이블 이름
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,10 +24,11 @@ public class ReviewAnalysis extends BaseEntity {
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
-    @Column(nullable = false)
-    private Float reviewPositiveRating;
+    @Convert(converter = ListToJsonConverter.class)
+    @Column(name = "positive_keywords", columnDefinition = "TEXT")
+    private List<String> positiveKeywords; // JSON 형태로 저장
 
-    @Column(nullable = false)
-    private Float reviewNegativeCount;
+    @Convert(converter = ListToJsonConverter.class)
+    @Column(name = "negative_keywords", columnDefinition = "TEXT")
+    private List<String> negativeKeywords; // JSON 형태로 저장
 }
-

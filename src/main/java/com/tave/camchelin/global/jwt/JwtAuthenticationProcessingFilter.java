@@ -109,6 +109,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                     jwtService.sendAccessToken(response, newAccessToken);
                     log.info("newAccessToken : {}", newAccessToken);
                 }
+                // accessToken을 성공적으로 한 이후에 어느 화면을 띄워줄건가 (다른 사람들이랑 다같이 회의할때)
         );
     }
 }

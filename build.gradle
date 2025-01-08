@@ -52,8 +52,6 @@ dependencies {
 
 	// Spring Data Redis 의존성 추가
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-
 }
 
 tasks.named('test') {

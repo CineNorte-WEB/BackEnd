@@ -31,7 +31,7 @@ public class JwtLogoutHandler implements LogoutHandler {
             long accessTokenExpiration = jwtService.getExpiration(accessToken); // 만료시간 가져오기
             redisTemplate.opsForValue().set("blacklist:" + accessToken, "logout", accessTokenExpiration, TimeUnit.MILLISECONDS); // 블랙리스트 추가
             log.info("accessToken 블랙리스트에 추가됨: {}", accessToken);  // 로그 추가
-        }else {
+        } else {
             log.info("유효하지 않거나 null인 accessToken");
         }
 
@@ -47,7 +47,7 @@ public class JwtLogoutHandler implements LogoutHandler {
                 userRepository.save(user); // 변경된 엔티티 저장
                 log.info("refreshToken 삭제됨: {}", user.getRefreshToken());  // 로그 추가
             });
-        }else {
+        } else {
             log.info("유효하지 않거나 null인 refreshToken");
         }
         log.info("로그아웃 완료");
