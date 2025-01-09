@@ -1,4 +1,4 @@
-package com.tave.camchelin.domain.review_analysis;
+package com.tave.camchelin.domain.review_analysis.controller;
 
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
