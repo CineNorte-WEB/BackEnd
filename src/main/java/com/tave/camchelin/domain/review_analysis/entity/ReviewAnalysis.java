@@ -24,6 +24,9 @@ public class ReviewAnalysis extends BaseEntity {
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
+    @Column(nullable = false)
+    private String name;
+
     @Convert(converter = ListToJsonConverter.class)
     @Column(name = "positive_keywords", columnDefinition = "TEXT")
     private List<String> positiveKeywords; // JSON 형태로 저장

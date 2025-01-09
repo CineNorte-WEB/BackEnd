@@ -38,6 +38,7 @@ public class UnivDto {
                 .address(univ.getAddress())
                 .places(univ.getPlaces().stream()
                         .map(PlaceDto::fromEntity)
+                        .peek(placeDto -> placeDto.setMenus(placeDto.getMenus())) // menus 필드 설정
                         .collect(Collectors.toList()))
                 .build();
     }

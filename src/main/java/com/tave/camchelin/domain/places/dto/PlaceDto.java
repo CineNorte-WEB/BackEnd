@@ -1,12 +1,16 @@
 package com.tave.camchelin.domain.places.dto;
 
+import com.tave.camchelin.domain.menus.dto.MenuDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.univs.entity.Univ;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Data
 @NoArgsConstructor
@@ -23,6 +27,7 @@ public class PlaceDto {
     private String likePoints;
     private String imageUrl;
     private String univName;
+    private List<MenuDto> menus;
 
     // PlaceDto -> Place 엔티티로 변환
     public Place toEntity(Univ univ) {
@@ -53,6 +58,9 @@ public class PlaceDto {
                 .likePoints(place.getLikePoints())
                 .imageUrl(place.getImageUrl())
                 .univName(place.getUniv().getName())
+                .menus(place.getMenus().stream()
+                        .map(MenuDto::fromEntity)
+                        .collect(Collectors.toList()))
                 .build();
     }
 

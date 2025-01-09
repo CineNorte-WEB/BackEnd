@@ -1,5 +1,6 @@
 package com.tave.camchelin.domain.review_analysis.controller;
 
+import com.tave.camchelin.domain.menus.dto.MenuDto;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.service.PlaceService;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +43,10 @@ class ReviewAnalysisControllerTest {
         String reviewContent = "리뷰 내용입니다.";
         RequestModelDto requestModelDto = new RequestModelDto(storeName, reviewContent);
 
-        PlaceDto placeDto = new PlaceDto(1L, storeName, "음식점", "서울 강남구", "10:00~22:00", 5, 4.5f, "맛있다", "test.jpg", "SNU");
+        List<MenuDto> menus = new ArrayList<>();
+        menus.add(new MenuDto(1L, "test메뉴", 5000, "테스트"));
+
+        PlaceDto placeDto = new PlaceDto(1L, storeName, "음식점", "서울 강남구", "10:00~22:00", 5, 4.5f, "맛있다", "test.jpg", "SNU", menus);
         Place place = Place.builder()
                 .id(1L)
                 .name(storeName)

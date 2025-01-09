@@ -1,10 +1,15 @@
 package com.tave.camchelin.domain.places.controller;
 
+import com.tave.camchelin.domain.menus.entity.Menu;
+import com.tave.camchelin.domain.menus.repository.MenuRepository;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
+import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/places")
