@@ -6,9 +6,11 @@ import com.tave.camchelin.domain.review_analysis.dto.ResponseModelDto;
 import com.tave.camchelin.domain.review_analysis.entity.ReviewAnalysis;
 import com.tave.camchelin.domain.review_analysis.repository.ReviewAnalysisStoreRepository;
 import com.tave.camchelin.global.callapi.CallApiService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ReviewAnalysisService {
     /*
     public ResponseModelDto analysis(RequestModelDto requestModelDto){
