@@ -15,17 +15,22 @@ import com.tave.camchelin.domain.users.dto.UserDto;
 import com.tave.camchelin.domain.users.dto.request.UpdateRequestUserDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
+import com.tave.camchelin.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final UnivRepository univRepository;
@@ -33,7 +38,10 @@ public class UserService {
     private final BookmarkRepository bookmarkRepository;
     private final BoardPostRepository boardPostRepository;
     private final ReviewPostRepository reviewPostRepository;
+
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     @Transactional
@@ -87,6 +95,44 @@ public class UserService {
         User updatedUser = userRepository.save(user);
 
         return UserDto.fromEntity(updatedUser);
+    }
+
+    @Transactional
+    public void deleteUser(Long userId, String token) {
+        // 1. 유저 확인 및 삭제
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        userRepository.deleteById(userId); // 사용자 삭제
+        log.info("사용자 ID {} 삭제 완료", userId);
+
+        // 2. Redis 블랙리스트에 토큰 추가
+        if (token != null && !token.isEmpty()) {
+            try {
+                addTokenToBlacklist(token);
+            } catch (Exception e) {
+                log.error("토큰 블랙리스트 추가 중 오류 발생: {}", e.getMessage());
+            }
+        }
+    }
+
+    private void addTokenToBlacklist(String accessToken) {
+        long expiration = jwtService.getExpiration(accessToken);
+        long currentTime = System.currentTimeMillis();
+        long ttl = expiration - currentTime;
+
+        if (ttl > 0) {
+            try {
+                // Redis 블랙리스트에 추가
+                String redisKey = "blacklist:" + accessToken;
+                redisTemplate.opsForValue().set(redisKey, "true", ttl, TimeUnit.MILLISECONDS);
+                log.info("토큰 {} 블랙리스트에 추가됨 (TTL: {}ms)", accessToken, ttl);
+            } catch (Exception e) {
+                log.error("Redis에 블랙리스트 추가 실패: {}", e.getMessage());
+            }
+        } else {
+            log.info("토큰 {}은 이미 만료되어 블랙리스트에 추가되지 않음", accessToken);
+        }
     }
 
     @Transactional(readOnly = true)
