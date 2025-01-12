@@ -142,7 +142,7 @@ class BoardPostServiceTest {
         BoardPostDto boardPostDto = new BoardPostDto(null, "New Title", "New Content", user, community);
 
         // When
-        BoardPostDto result = boardPostService.writeBoardPost(boardPostDto);
+        BoardPostDto result = boardPostService.writeBoardPost(user.getId(), boardPostDto);
 
         // Then
         assertThat(result).isNotNull();
@@ -169,7 +169,7 @@ class BoardPostServiceTest {
                 .community(community)
                 .build();
         // When & Then
-        assertThatThrownBy(() -> boardPostService.writeBoardPost(boardPostDto))
+        assertThatThrownBy(() -> boardPostService.writeBoardPost(user.getId(), boardPostDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("유저 정보를 찾을 수 없습니다.");
     }
@@ -187,7 +187,7 @@ class BoardPostServiceTest {
         BoardPostDto boardPostDto2 = new BoardPostDto(boardPostId, "Updated Title", "Updated Content", user, community);
 
         // When
-        boardPostService.editBoardPost(boardPostId, boardPostDto2);
+        boardPostService.editBoardPost(user.getId(), boardPostId, boardPostDto2);
 
         // Then
         BoardPost updatedBoardPost = boardPostRepository.findById(boardPostId).orElseThrow();
@@ -206,7 +206,7 @@ class BoardPostServiceTest {
         Long boardPostId = boardPost.getId();
 
         // When
-        boardPostService.deleteBoardPost(boardPostId);
+        boardPostService.deleteBoardPost(user.getId(), boardPostId);
 
         // Then
         assertThat(boardPostRepository.findById(boardPostId)).isEmpty();
@@ -215,7 +215,7 @@ class BoardPostServiceTest {
     @Test
     void deleteBoardPost_ShouldThrowException_WhenBoardPostDoesNotExist() {
         // When & Then
-        assertThatThrownBy(() -> boardPostService.deleteBoardPost(999L))
+        assertThatThrownBy(() -> boardPostService.deleteBoardPost(999L, 999L))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("게시글을 찾을 수 없습니다.");
     }

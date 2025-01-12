@@ -50,11 +50,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 .filter(jwtService::isTokenValid)
                 .orElse(null);
 
-        log.info("========================================");
-        log.info("refreshToken : {}", refreshToken);
-        log.info("accessToken : {}", accessToken);
-        log.info("========================================");
-
         if (accessToken != null && refreshToken != null) {
             checkAccessTokenAndAuthentication(request, response, filterChain);
             return;

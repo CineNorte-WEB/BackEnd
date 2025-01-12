@@ -2,6 +2,8 @@ package com.tave.camchelin.domain.review_posts.controller;
 
 import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
 import com.tave.camchelin.domain.review_posts.service.ReviewPostService;
+import com.tave.camchelin.domain.users.service.UserService;
+import com.tave.camchelin.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import java.util.List;
 public class ReviewPostController {
 
     private final ReviewPostService reviewPostService;
+    private final UserService userService;
 
     // 리뷰 목록 조회
     @GetMapping
@@ -32,24 +35,32 @@ public class ReviewPostController {
 
     // 리뷰 작성
     @PostMapping("/write")
-    public ResponseEntity<ReviewPostDto> writeReviewPost(@RequestBody ReviewPostDto reviewPostDto) {
-        ReviewPostDto createdReviewPostDto = reviewPostService.writeReviewPost(reviewPostDto);
+    public ResponseEntity<ReviewPostDto> writeReviewPost(
+            @RequestHeader("Authorization") String token,
+            @RequestBody ReviewPostDto reviewPostDto) {
+        Long userId = userService.extractUserIdFromToken(token); // JWT에서 userId 추출
+        ReviewPostDto createdReviewPostDto = reviewPostService.writeReviewPost(userId, reviewPostDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReviewPostDto);
     }
 
     // 리뷰 수정
     @PutMapping("/{review_post_id}/edit")
     public ResponseEntity<Void> editReviewPost(
+            @RequestHeader("Authorization") String token,
             @PathVariable("review_post_id") Long reviewPostId,
             @RequestBody ReviewPostDto reviewPostDto) {
-        reviewPostService.editReviewPost(reviewPostId, reviewPostDto);
+        Long userId = userService.extractUserIdFromToken(token); // JWT에서 userId 추출
+        reviewPostService.editReviewPost(userId, reviewPostId, reviewPostDto);
         return ResponseEntity.ok().build();
     }
 
     // 리뷰 삭제
     @DeleteMapping("/{review_post_id}")
-    public ResponseEntity<Void> deleteReviewPost(@PathVariable("review_post_id") Long reviewPostId) {
-        reviewPostService.deleteReviewPost(reviewPostId);
+    public ResponseEntity<Void> deleteReviewPost(
+            @RequestHeader("Authorization") String token,
+            @PathVariable("review_post_id") Long reviewPostId) {
+        Long userId = userService.extractUserIdFromToken(token); // JWT에서 userId 추출
+        reviewPostService.deleteReviewPost(userId, reviewPostId);
         return ResponseEntity.ok().build();
     }
 

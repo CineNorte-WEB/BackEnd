@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tave.camchelin.domain.users.repository.UserRepository;
+import com.tave.camchelin.domain.users.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Transactional
 @Service
@@ -52,6 +55,7 @@ public class JwtServiceImpl implements JwtService{
     private static final String BEARER = "Bearer ";
 
     private final UserRepository userRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     //메서드
@@ -190,6 +194,7 @@ public class JwtServiceImpl implements JwtService{
         }
     }
 
+
     @Override
     public long getExpiration(String token) {
         try {
@@ -201,6 +206,27 @@ public class JwtServiceImpl implements JwtService{
         } catch (Exception e) {
             log.error("토큰 만료 시간 추출 중 오류 발생: {}", e.getMessage());
             throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
+    }
+
+    @Override
+    public void addTokenToBlacklist(String accessToken) {
+        try {
+            // 토큰 만료 시간 계산
+            long expiration = getExpiration(accessToken);
+            long currentTime = System.currentTimeMillis();
+            long ttl = expiration - currentTime;
+
+            // Redis에 블랙리스트 추가
+            if (ttl > 0) {
+                String redisKey = "blacklist:" + accessToken;
+                redisTemplate.opsForValue().set(redisKey, "true", ttl, TimeUnit.MILLISECONDS);
+                log.info("토큰 {} 블랙리스트에 추가됨 (TTL: {}ms)", accessToken, ttl);
+            } else {
+                log.info("토큰 {}은 이미 만료되어 블랙리스트에 추가되지 않음", accessToken);
+            }
+        } catch (IllegalArgumentException e) {
+            log.error("블랙리스트 등록 실패: {}", e.getMessage());
         }
     }
 

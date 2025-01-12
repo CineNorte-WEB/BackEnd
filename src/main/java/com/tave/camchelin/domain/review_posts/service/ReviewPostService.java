@@ -13,6 +13,7 @@ import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +49,8 @@ public class ReviewPostService {
 
     // 리뷰 작성
     @Transactional
-    public ReviewPostDto writeReviewPost(ReviewPostDto reviewPostDto) {
-        User user = userRepository.findById(reviewPostDto.getUser().getId())
+    public ReviewPostDto writeReviewPost(Long userId, ReviewPostDto reviewPostDto) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보를 찾을 수 없습니다."));
         Community community = communityRepository.findByName("reviewPost")
                 .orElseThrow(() -> new IllegalArgumentException("커뮤니티 정보를 찾을 수 없습니다."));
@@ -74,26 +75,35 @@ public class ReviewPostService {
 
     // 리뷰 수정
     @Transactional
-    public void editReviewPost(Long reviewPostId, ReviewPostDto reviewPostDto) {
+    public void editReviewPost(Long userId, Long reviewPostId, ReviewPostDto reviewPostDto) {
         ReviewPost reviewPost = reviewPostRepository.findById(reviewPostId)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
+
+        if (!reviewPost.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
 
         reviewPost.edit(
                 reviewPostDto.getMenu(),
                 reviewPostDto.getPrice(),
                 reviewPostDto.getContent()
         );
-
-        reviewPostRepository.save(reviewPost);
     }
+
 
     // 리뷰 삭제
     @Transactional
-    public void deleteReviewPost(Long reviewPostId) {
+    public void deleteReviewPost(Long userId, Long reviewPostId) {
         ReviewPost reviewPost = reviewPostRepository.findById(reviewPostId)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
+
+        if (!reviewPost.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+
         reviewPostRepository.delete(reviewPost);
     }
+
 
     // 특정 장소의 리뷰 조회
     @Transactional(readOnly = true)

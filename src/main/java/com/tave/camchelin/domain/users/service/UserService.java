@@ -99,17 +99,16 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long userId, String token) {
-        // 1. 유저 확인 및 삭제
+        // 1. 사용자 삭제
         userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-
-        userRepository.deleteById(userId); // 사용자 삭제
+        userRepository.deleteById(userId);
         log.info("사용자 ID {} 삭제 완료", userId);
 
-        // 2. Redis 블랙리스트에 토큰 추가
+        // 2. 블랙리스트 등록 (JwtService 호출)
         if (token != null && !token.isEmpty()) {
             try {
-                addTokenToBlacklist(token);
+                jwtService.addTokenToBlacklist(token);
             } catch (Exception e) {
                 log.error("토큰 블랙리스트 추가 중 오류 발생: {}", e.getMessage());
             }
@@ -196,11 +195,24 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+
+
     @Transactional(readOnly = true)
-    public Long getUserIdByEmail(String email) {
-        User user = userRepository.findByEmail(email)
+    public Long extractUserIdFromToken(String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("토큰이 없거나 올바르지 않은 형식입니다.");
+        }
+
+        String jwtToken = token.substring(7); // "Bearer " 제거
+
+        // JwtService를 사용해 이메일 추출
+        String email = jwtService.extractEmail(jwtToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
+
+        // 이메일로 사용자 ID 조회
+        return userRepository.findByEmail(email)
+                .map(User::getId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. 이메일: " + email));
-        return user.getId();
     }
 
 }

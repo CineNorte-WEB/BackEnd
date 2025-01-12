@@ -69,7 +69,7 @@ class ReviewPostServiceTest {
         ReviewPostDto reviewPostDto = new ReviewPostDto(null, user, community, place, univ, "Test Menu", 10000, "Test Content");
 
         // When
-        ReviewPostDto savedReview = reviewPostService.writeReviewPost(reviewPostDto);
+        ReviewPostDto savedReview = reviewPostService.writeReviewPost(user.getId(),reviewPostDto);
 
         // Then
         assertThat(savedReview).isNotNull();
@@ -131,7 +131,7 @@ class ReviewPostServiceTest {
                 .build();
 
         // When
-        reviewPostService.editReviewPost(savedReview.getId(), updatedDto);
+        reviewPostService.editReviewPost(user.getId(), savedReview.getId(), updatedDto);
 
         // Then
         ReviewPost updatedReview = reviewPostRepository.findById(savedReview.getId()).orElseThrow();
@@ -150,7 +150,7 @@ class ReviewPostServiceTest {
         ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
 
         // When
-        reviewPostService.deleteReviewPost(savedReview.getId());
+        reviewPostService.deleteReviewPost(user.getId(), savedReview.getId());
 
         // Then
         assertThat(reviewPostRepository.findById(savedReview.getId())).isEmpty();
