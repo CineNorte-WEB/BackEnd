@@ -64,9 +64,8 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        ReviewPostDto reviewPostDto = new ReviewPostDto(null, user, community, place, univ, "Test Menu", 10000, "Test Content");
+        ReviewPostDto reviewPostDto = new ReviewPostDto(null, user, community, place, "Test Content");
 
         // When
         ReviewPostDto savedReview = reviewPostService.writeReviewPost(reviewPostDto);
@@ -83,10 +82,9 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
-        reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu2", 20000, "Content2"));
+        reviewPostRepository.save(new ReviewPost(null, user, community, place, "Content1"));
+        reviewPostRepository.save(new ReviewPost(null, user, community, place, "Content2"));
 
         // When
         List<ReviewPostDto> reviewPosts = reviewPostService.getReviewPosts();
@@ -102,9 +100,8 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
+        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, "Content1"));
 
         // When
         ReviewPostDto review = reviewPostService.getReviewPostById(savedReview.getId());
@@ -120,13 +117,10 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
+        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, "Content1"));
 
         ReviewPostDto updatedDto = ReviewPostDto.builder()
-                .menu("Updated Menu")
-                .price(15000)
                 .content("Updated Content")
                 .build();
 
@@ -135,7 +129,6 @@ class ReviewPostServiceTest {
 
         // Then
         ReviewPost updatedReview = reviewPostRepository.findById(savedReview.getId()).orElseThrow();
-        assertThat(updatedReview.getMenu()).isEqualTo("Updated Menu");
         assertThat(updatedReview.getContent()).isEqualTo("Updated Content");
     }
 
@@ -145,9 +138,8 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
+        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, "Content1"));
 
         // When
         reviewPostService.deleteReviewPost(savedReview.getId());
@@ -162,10 +154,9 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
-        reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu2", 15000, "Content2"));
+        reviewPostRepository.save(new ReviewPost(null, user, community, place, "Content1"));
+        reviewPostRepository.save(new ReviewPost(null, user, community, place,  "Content2"));
 
         // When
         List<ReviewPostDto> reviews = reviewPostService.getReviewsByPlace(place.getId());

@@ -32,14 +32,6 @@ public class ReviewPost extends BaseEntity {
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "univ_id", nullable = false)
-    private Univ univ;
-
-    private String menu;
-
-    private Integer price;
-
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
@@ -49,13 +41,13 @@ public class ReviewPost extends BaseEntity {
 //    @Column(name = "negative_rating", nullable = false)
 //    private Float negativeRating;
 
-    public void edit(String menu, Integer price, String content) {
-        if (menu != null && !menu.isBlank()) {
-            this.menu = menu;
+    public void edit(Place place, String content) {
+        // Place가 변경 가능한 경우
+        if (place != null) {
+            this.place = place;
         }
-        if (price != null && price >= 0) { // 가격은 음수가 될 수 없도록 검증
-            this.price = price;
-        }
+
+        // Content가 null 또는 공백이 아닌 경우에만 변경
         if (content != null && !content.isBlank()) {
             this.content = content;
         }

@@ -21,9 +21,6 @@ public class ReviewPostDto {
     private User user;
     private Community community;
     private Place place;
-    private Univ univ;
-    private String menu;
-    private Integer price;
     private String content;
 
     public ReviewPost toEntity(User user, Community community, Place place, Univ univ) {
@@ -31,9 +28,6 @@ public class ReviewPostDto {
                 .user(user)
                 .community(community)
                 .place(place)
-                .univ(univ)
-                .menu(this.menu)
-                .price(this.price)
                 .content(this.content)
                 .build();
     }
@@ -44,9 +38,6 @@ public class ReviewPostDto {
                 .user(reviewPost.getUser())
                 .community(reviewPost.getCommunity())
                 .place(reviewPost.getPlace())
-                .univ(reviewPost.getUniv())
-                .menu(reviewPost.getMenu())
-                .price(reviewPost.getPrice())
                 .content(reviewPost.getContent())
                 .build();
     }

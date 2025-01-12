@@ -55,16 +55,11 @@ public class ReviewPostService {
                 .orElseThrow(() -> new IllegalArgumentException("커뮤니티 정보를 찾을 수 없습니다."));
         Place place = placeRepository.findById(reviewPostDto.getPlace().getId())
                 .orElseThrow(() -> new IllegalArgumentException("장소 정보를 찾을 수 없습니다."));
-        Univ univ = univRepository.findById(reviewPostDto.getUniv().getId())
-                .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾을 수 없습니다."));
 
         ReviewPost reviewPost = ReviewPost.builder()
                 .user(user)
                 .community(community)
                 .place(place)
-                .univ(univ)
-                .menu(reviewPostDto.getMenu())
-                .price(reviewPostDto.getPrice())
                 .content(reviewPostDto.getContent())
                 .build();
 
@@ -79,8 +74,7 @@ public class ReviewPostService {
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
 
         reviewPost.edit(
-                reviewPostDto.getMenu(),
-                reviewPostDto.getPrice(),
+                reviewPostDto.getPlace(),
                 reviewPostDto.getContent()
         );
 

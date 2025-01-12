@@ -261,18 +261,12 @@ class UserServiceTest {
                 .user(user)
                 .community(community)
                 .place(place)
-                .univ(univ)
-                .menu("Menu 1")
-                .price(10000)
                 .content("Review Content 1")
                 .build());
         reviewPostRepository.save(ReviewPost.builder()
                 .user(user)
                 .community(community)
                 .place(place)
-                .univ(univ)
-                .menu("Menu 2")
-                .price(20000)
                 .content("Review Content 2")
                 .build());
 
@@ -281,8 +275,6 @@ class UserServiceTest {
 
         // Then
         assertThat(reviewPosts).isNotNull().hasSize(2);
-        assertThat(reviewPosts.get(0).getMenu()).isEqualTo("Menu 1");
-        assertThat(reviewPosts.get(1).getMenu()).isEqualTo("Menu 2");
     }
 
     @Test
