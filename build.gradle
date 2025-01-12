@@ -65,6 +65,7 @@ dependencies {
 	//mock 설정
 	testImplementation 'org.mockito:mockito-core:5.2.0'
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
+
 }
 
 
