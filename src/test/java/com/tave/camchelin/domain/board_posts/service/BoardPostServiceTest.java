@@ -1,6 +1,8 @@
 package com.tave.camchelin.domain.board_posts.service;
 
 import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
+import com.tave.camchelin.domain.board_posts.dto.request.UpdateRequestBoardDto;
+import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
 import com.tave.camchelin.domain.board_posts.entity.BoardPost;
 import com.tave.camchelin.domain.board_posts.repository.BoardPostRepository;
 import com.tave.camchelin.domain.communities.entity.Community;
@@ -56,10 +58,10 @@ class BoardPostServiceTest {
     @Test
     void getBoardPosts_ShouldReturnBoardPosts_WhenBoardPostsExist2() {
         // Given
-        User user = userRepository.findByEmail("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser@test.co.kr").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
-        BoardPostDto boardPostDto = new BoardPostDto(null, "Test Title", "Test Content", user, community);
+        BoardPostDto boardPostDto = new BoardPostDto(null, user, community, "Test Title", "Test Content");
 
         // 엔티티 저장
         boardPostRepository.save(boardPostDto.toEntity(user, community));
@@ -77,7 +79,7 @@ class BoardPostServiceTest {
         });
 
         // When
-        List<BoardPostDto> result = boardPostService.getBoardPosts();
+        List<ResponseBoardDto> result = boardPostService.getBoardPosts();
 
         // Then
         assertThat(result).isNotNull();
@@ -88,15 +90,15 @@ class BoardPostServiceTest {
     @Test
     void getBoardPosts_ShouldReturnBoardPosts_WhenBoardPostsExist() {
         // Given
-        User user = userRepository.findByEmail("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser@test.co.kr").orElseThrow();
         Community community = communityRepository.findById(1L).orElseThrow();
 
-        BoardPostDto boardPostDto = new BoardPostDto(null, "Test Title", "Test Content", user, community);
+        BoardPostDto boardPostDto = new BoardPostDto(null, user, community, "Test Title", "Test Content");
         boardPostRepository.save(boardPostDto.toEntity(user, community));
 
 
         // When
-        List<BoardPostDto> result = boardPostService.getBoardPosts();
+        List<ResponseBoardDto> result = boardPostService.getBoardPosts();
 
         // Then
         assertThat(result).isNotNull();
@@ -107,17 +109,17 @@ class BoardPostServiceTest {
     @Test
     void getBoardPostById_ShouldReturnBoardPost_WhenBoardPostExists() {
         // Given
-        User user = userRepository.findByEmail("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser@test.co.kr").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
-        BoardPostDto boardPostDto = new BoardPostDto(null, "Test Title", "Test Content", user, community);
+        BoardPostDto boardPostDto = new BoardPostDto(null, user, community, "Test Title", "Test Content");
         BoardPost boardPost = boardPostDto.toEntity(user, community);
 
         boardPostRepository.save(boardPost);
         Long boardPostId = boardPost.getId();
 
         // When
-        BoardPostDto result = boardPostService.getBoardPostById(boardPostId);
+        ResponseBoardDto result = boardPostService.getBoardPostById(boardPostId);
 
         // Then
         assertThat(result).isNotNull();
@@ -136,13 +138,13 @@ class BoardPostServiceTest {
     @Test
     void writeBoardPost_ShouldCreateBoardPost_WhenValidDataProvided() {
         // Given
-        User user = userRepository.findByEmail("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser@test.co.kr").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
-        BoardPostDto boardPostDto = new BoardPostDto(null, "New Title", "New Content", user, community);
+        BoardPostDto boardPostDto = new BoardPostDto(null, user, community, "New Title", "New Content");
 
         // When
-        BoardPostDto result = boardPostService.writeBoardPost(user.getId(), boardPostDto);
+        ResponseBoardDto result = boardPostService.writeBoardPost(user.getId(), boardPostDto);
 
         // Then
         assertThat(result).isNotNull();
@@ -177,31 +179,42 @@ class BoardPostServiceTest {
     @Test
     void editBoardPost_ShouldEditBoardPost_WhenValidDataProvided() {
         // Given
-        User user = userRepository.findByEmail("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser@test.co.kr").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
-        BoardPostDto boardPostDto = new BoardPostDto(null, "Old Title", "Old Content", user, community);
-        BoardPost boardPost = boardPostRepository.save(boardPostDto.toEntity(user, community));
+        BoardPost boardPost = boardPostRepository.save(
+                BoardPost.builder()
+                        .title("Old Title")
+                        .content("Old Content")
+                        .user(user)
+                        .community(community)
+                        .build()
+        );
         Long boardPostId = boardPost.getId();
 
-        BoardPostDto boardPostDto2 = new BoardPostDto(boardPostId, "Updated Title", "Updated Content", user, community);
+        UpdateRequestBoardDto updatedDto = UpdateRequestBoardDto.builder()
+                .title("Updated Title") // 수정할 제목
+                .content("Updated Content") // 수정할 내용
+                .build();
 
         // When
-        boardPostService.editBoardPost(user.getId(), boardPostId, boardPostDto2);
+        boardPostService.editBoardPost(user.getId(), boardPostId, updatedDto);
 
         // Then
         BoardPost updatedBoardPost = boardPostRepository.findById(boardPostId).orElseThrow();
-        assertThat(updatedBoardPost.getTitle()).isEqualTo("Updated Title");
-        assertThat(updatedBoardPost.getContent()).isEqualTo("Updated Content");
+
+        // Assertions
+        assertThat(updatedBoardPost.getTitle()).isEqualTo("Updated Title"); // 제목이 수정되었는지 확인
+        assertThat(updatedBoardPost.getContent()).isEqualTo("Updated Content"); // 내용이 수정되었는지 확인
     }
 
     @Test
     void deleteBoardPost_ShouldDeleteBoardPost_WhenBoardPostExists() {
         // Given
-        User user = userRepository.findByEmail("testUser").orElseThrow();
+        User user = userRepository.findByEmail("testUser@test.co.kr").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
-        BoardPostDto boardPostDto = new BoardPostDto(null, "Title to Delete", "Content", user, community);
+        BoardPostDto boardPostDto = new BoardPostDto(null, user, community, "Title to Delete", "Content");
         BoardPost boardPost = boardPostRepository.save(boardPostDto.toEntity(user, community));
         Long boardPostId = boardPost.getId();
 

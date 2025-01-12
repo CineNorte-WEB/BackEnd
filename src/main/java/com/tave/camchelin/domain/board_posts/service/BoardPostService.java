@@ -1,11 +1,12 @@
 package com.tave.camchelin.domain.board_posts.service;
 
 import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
+import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
+import com.tave.camchelin.domain.board_posts.dto.request.UpdateRequestBoardDto;
 import com.tave.camchelin.domain.board_posts.entity.BoardPost;
 import com.tave.camchelin.domain.board_posts.repository.BoardPostRepository;
 import com.tave.camchelin.domain.communities.entity.Community;
 import com.tave.camchelin.domain.communities.repository.CommunityRepository;
-import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,53 +25,46 @@ public class BoardPostService {
     private final CommunityRepository communityRepository;
 
     @Transactional(readOnly = true)
-    public List<BoardPostDto> getBoardPosts() {
+    public List<ResponseBoardDto> getBoardPosts() {
         List<BoardPost> boardPosts = boardPostRepository.findAll();
         return boardPosts.stream()
-                .map(BoardPostDto::fromEntity)
+                .map(ResponseBoardDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public BoardPostDto getBoardPostById(Long boardPostId) {
+    public ResponseBoardDto getBoardPostById(Long boardPostId) {
         BoardPost boardPost = boardPostRepository.findById(boardPostId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        return BoardPostDto.fromEntity(boardPost);
+        return ResponseBoardDto.fromEntity(boardPost);
     }
 
     @Transactional
-    public BoardPostDto writeBoardPost(Long userId, BoardPostDto boardPostDto) {
-        // User와 Community를 찾아 연관 관계를 설정
+    public ResponseBoardDto writeBoardPost(Long userId, BoardPostDto boardPostDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보를 찾을 수 없습니다."));
-        Community community = communityRepository.findByName(boardPostDto.getCommunity().getName())
+        Community community = communityRepository.findByName("boardPost")
                 .orElseThrow(() -> new IllegalArgumentException("커뮤니티 정보를 찾을 수 없습니다."));
 
-        // BoardPost Entity 생성 및 저장
-        BoardPost boardPost = BoardPost.builder()
-                .title(boardPostDto.getTitle())
-                .content(boardPostDto.getContent())
-                .user(user)
-                .community(community)
-                .build();
+        BoardPost boardPost = boardPostDto.toEntity(user, community);
 
-        boardPostRepository.save(boardPost);
-        return BoardPostDto.fromEntity(boardPost);
+        boardPost = boardPostRepository.save(boardPost);
+        return ResponseBoardDto.fromEntity(boardPost);
     }
 
     @Transactional
-    public void editBoardPost(Long userId, Long boardPostId, BoardPostDto boardPostDto) {
+    public void editBoardPost(Long userId, Long boardPostId, UpdateRequestBoardDto updateRequestDto) {
         BoardPost boardPost = boardPostRepository.findById(boardPostId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
         if (!boardPost.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("권한이 없습니다."); // Spring Security 예외 사용
+            throw new AccessDeniedException("권한이 없습니다.");
         }
 
-        // 수정 가능한 필드만 업데이트
-        boardPost.edit(boardPostDto.getTitle(), boardPostDto.getContent());
-
-        boardPostRepository.save(boardPost);
+        boardPost.edit(
+                updateRequestDto.getTitle(),
+                updateRequestDto.getContent()
+        );
     }
 
     @Transactional
@@ -79,7 +73,7 @@ public class BoardPostService {
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
         if (!boardPost.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("권한이 없습니다."); // Spring Security 예외 사용
+            throw new AccessDeniedException("권한이 없습니다.");
         }
 
         boardPostRepository.delete(boardPost);

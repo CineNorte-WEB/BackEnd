@@ -1,6 +1,7 @@
 package com.tave.camchelin.domain.users.service;
 
 import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
+import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
 import com.tave.camchelin.domain.board_posts.entity.BoardPost;
 import com.tave.camchelin.domain.board_posts.repository.BoardPostRepository;
 import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
@@ -11,6 +12,7 @@ import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.repository.PlaceRepository;
 import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
+import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
 import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
@@ -228,7 +230,7 @@ class UserServiceTest {
                 .build());
 
         // When
-        List<BoardPostDto> boardPosts = userService.getUserBoardPosts(user.getId());
+        List<ResponseBoardDto> boardPosts = userService.getUserBoardPosts(user.getId());
 
         // Then
         assertThat(boardPosts).isNotNull().hasSize(2);
@@ -242,7 +244,7 @@ class UserServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
 
         // When
-        List<BoardPostDto> boardPosts = userService.getUserBoardPosts(user.getId());
+        List<ResponseBoardDto> boardPosts = userService.getUserBoardPosts(user.getId());
 
         // Then
         assertThat(boardPosts).isNotNull().isEmpty();
@@ -254,35 +256,28 @@ class UserServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findById(2L).orElseThrow();
         Place place = placeRepository.findById(1L).orElseThrow();
-        Univ univ = univRepository.findById(1L).orElseThrow();
 
 
         reviewPostRepository.save(ReviewPost.builder()
                 .user(user)
                 .community(community)
                 .place(place)
-                .univ(univ)
-                .menu("Menu 1")
-                .price(10000)
                 .content("Review Content 1")
                 .build());
         reviewPostRepository.save(ReviewPost.builder()
                 .user(user)
                 .community(community)
                 .place(place)
-                .univ(univ)
-                .menu("Menu 2")
-                .price(20000)
                 .content("Review Content 2")
                 .build());
 
         // When
-        List<ReviewPostDto> reviewPosts = userService.getUserReviewPosts(user.getId());
+        List<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(user.getId());
 
         // Then
         assertThat(reviewPosts).isNotNull().hasSize(2);
-        assertThat(reviewPosts.get(0).getMenu()).isEqualTo("Menu 1");
-        assertThat(reviewPosts.get(1).getMenu()).isEqualTo("Menu 2");
+        assertThat(reviewPosts.get(0).getContent()).isEqualTo("Review Content 1");
+        assertThat(reviewPosts.get(1).getContent()).isEqualTo("Review Content 2");
     }
 
     @Test
@@ -291,7 +286,7 @@ class UserServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
 
         // When
-        List<ReviewPostDto> reviewPosts = userService.getUserReviewPosts(user.getId());
+        List<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(user.getId());
 
         // Then
         assertThat(reviewPosts).isNotNull().isEmpty();

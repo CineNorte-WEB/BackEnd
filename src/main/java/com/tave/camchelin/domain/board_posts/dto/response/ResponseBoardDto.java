@@ -1,4 +1,4 @@
-package com.tave.camchelin.domain.board_posts.dto;
+package com.tave.camchelin.domain.board_posts.dto.response;
 
 import com.tave.camchelin.domain.board_posts.entity.BoardPost;
 import com.tave.camchelin.domain.communities.entity.Community;
@@ -12,28 +12,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BoardPostDto {
+public class ResponseBoardDto {
+
     private Long id;
-    private User user;
-    private Community community;
     private String title;
     private String content;
+    private String userNickname;
+    // Entity -> DTO 변환 메서드
+    public static ResponseBoardDto fromEntity(BoardPost boardPost) {
+        User user = boardPost.getUser();
 
-    public BoardPost toEntity(User user, Community community) {
-        return BoardPost.builder()
-                .user(user)
-                .community(community)
-                .title(this.title)
-                .content(this.content)
-                .build();
-    }
-
-    public static BoardPostDto fromEntity(BoardPost boardPost) {
-        return BoardPostDto.builder()
+        return ResponseBoardDto.builder()
                 .id(boardPost.getId())
-                .user(boardPost.getUser())
                 .title(boardPost.getTitle())
                 .content(boardPost.getContent())
+                .userNickname(user != null ? user.getNickname() : null)
                 .build();
     }
 }

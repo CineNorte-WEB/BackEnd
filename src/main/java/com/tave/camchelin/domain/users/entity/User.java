@@ -1,6 +1,5 @@
 package com.tave.camchelin.domain.users.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tave.camchelin.domain.BaseEntity;
 import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
 import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
@@ -9,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

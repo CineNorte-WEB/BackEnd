@@ -1,13 +1,15 @@
 package com.tave.camchelin.domain.users.service;
 
-import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
+import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
+import com.tave.camchelin.domain.board_posts.entity.BoardPost;
 import com.tave.camchelin.domain.board_posts.repository.BoardPostRepository;
 import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
 import com.tave.camchelin.domain.bookmarks.repository.BookmarkRepository;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.repository.PlaceRepository;
-import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
+import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
+import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
 import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -176,22 +179,40 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<BoardPostDto> getUserBoardPosts(Long userId) {
+    public List<ResponseBoardDto> getUserBoardPosts(Long userId) {
         User user = userRepository.findById(userId)  // 사용자 ID를 전달 받거나 세션에서 가져와야 할 수 있음
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
-        return boardPostRepository.findByUserId(user.getId())
-                .stream()
-                .map(BoardPostDto::fromEntity)
+        List<BoardPost> boardPosts = boardPostRepository.findByUserId(user.getId());
+
+        // 방어 코드: Null 방지
+        if (boardPosts == null || boardPosts.isEmpty()) {
+            log.warn("사용자 {}의 게시글이 없습니다.", userId);
+            return List.of();
+        }
+
+        // DTO로 변환
+        return boardPosts.stream()
+                .filter(Objects::nonNull) // Null 방지 필터
+                .map(ResponseBoardDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewPostDto> getUserReviewPosts(Long userId) {
+    public List<ResponseReviewDto> getUserReviewPosts(Long userId) {
         User user = userRepository.findById(userId)  // 사용자 ID를 전달 받거나 세션에서 가져와야 할 수 있음
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
-        return reviewPostRepository.findByUserId(user.getId())
-                .stream()
-                .map(ReviewPostDto::fromEntity)
+        List<ReviewPost> reviewPosts = reviewPostRepository.findByUserId(user.getId());
+
+        // 방어 코드: Null 방지
+        if (reviewPosts == null || reviewPosts.isEmpty()) {
+            log.warn("사용자 {}의 리뷰가 없습니다.", userId);
+            return List.of();
+        }
+
+        // DTO로 변환
+        return reviewPosts.stream()
+                .filter(Objects::nonNull) // Null 방지 필터
+                .map(ResponseReviewDto::fromEntity)
                 .collect(Collectors.toList());
     }
 

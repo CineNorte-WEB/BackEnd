@@ -1,22 +1,21 @@
 package com.tave.camchelin.domain.users.controller;
 
 import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
+import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
+import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.users.dto.UserDto;
 import com.tave.camchelin.domain.users.dto.request.UpdateRequestUserDto;
-import com.tave.camchelin.domain.users.entity.User;
-import com.tave.camchelin.domain.users.repository.UserRepository;
 import com.tave.camchelin.domain.users.service.UserService;
-import com.tave.camchelin.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -122,7 +121,7 @@ public class UserController {
     }
 
     @GetMapping("/boards") // 현재 로그인 사용자의 게시글 조회
-    public ResponseEntity<List<BoardPostDto>> getUserBoards(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<ResponseBoardDto>> getUserBoards(@RequestHeader("Authorization") String token) {
         Long userId = userService.extractUserIdFromToken(token);
 
         if (userId == null) {
@@ -130,13 +129,19 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        List<BoardPostDto> boardPosts = userService.getUserBoardPosts(userId);
+        List<ResponseBoardDto> boardPosts = userService.getUserBoardPosts(userId);
+
+        if (boardPosts.isEmpty()) {
+            log.info("사용자 {}의 게시글이 없습니다.", userId);
+            return ResponseEntity.noContent().build();
+        }
+
         return ResponseEntity.ok(boardPosts);
     }
 
     // 사용자가 작성한 리뷰 목록 조회
     @GetMapping("/reviews") // 현재 로그인 사용자의 리뷰 조회
-    public ResponseEntity<List<ReviewPostDto>> getUserReviews(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<ResponseReviewDto>> getUserReviews(@RequestHeader("Authorization") String token) {
         Long userId = userService.extractUserIdFromToken(token);
 
         if (userId == null) {
@@ -144,7 +149,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        List<ReviewPostDto> reviewPosts = userService.getUserReviewPosts(userId);
+        List<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(userId);
+
+        if (reviewPosts.isEmpty()) {
+            log.info("사용자 {}의 리뷰가 없습니다.", userId);
+            return ResponseEntity.noContent().build();
+        }
+
         return ResponseEntity.ok(reviewPosts);
     }
+
 }
