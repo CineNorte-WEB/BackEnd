@@ -56,7 +56,36 @@ public class UserController {
         return ResponseEntity.ok(updatedUserDto);
     }
 
-    @GetMapping("/{userId}/bookmarks")
+    @DeleteMapping("/delete") // 현재 로그인 사용자의 회원탈퇴
+    public ResponseEntity<Void> deleteUser(@RequestHeader("Authorization") String token) {
+        // 토큰에서 Bearer 제거 및 userId 추출
+        Long userId = extractUserIdFromToken(token);
+
+        if (userId == null) {
+            log.error("유효하지 않은 토큰입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // UserService에서 유저 삭제와 토큰 블랙리스트 처리
+        userService.deleteUser(userId, token.substring(7)); // Bearer 제거 후 토큰 전달
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/bookmarks") // 현재 로그인 사용자의 북마크 조회
+    public ResponseEntity<List<PlaceDto>> getBookmarks(@RequestHeader("Authorization") String token) {
+        Long userId = extractUserIdFromToken(token);
+
+        if (userId == null) {
+            log.error("유효하지 않은 토큰입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        List<PlaceDto> bookmarks = userService.getUserBookmarks(userId);
+        return ResponseEntity.ok(bookmarks);
+    }
+
+
+    @GetMapping("/{userId}/bookmarks") // 특정 사용자의 북마크 조회
     public ResponseEntity<List<PlaceDto>> getUserBookmarks(@PathVariable Long userId) {
         List<PlaceDto> bookmarks = userService.getUserBookmarks(userId);
         return ResponseEntity.ok(bookmarks);

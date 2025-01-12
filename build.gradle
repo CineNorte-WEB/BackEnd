@@ -66,6 +66,8 @@ dependencies {
 	testImplementation 'org.mockito:mockito-core:5.2.0'
 	testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
 
+	//s3 연결
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 
