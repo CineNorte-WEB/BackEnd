@@ -10,6 +10,8 @@ import com.tave.camchelin.domain.communities.repository.CommunityRepository;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +27,12 @@ public class BoardPostService {
     private final CommunityRepository communityRepository;
 
     @Transactional(readOnly = true)
-    public List<ResponseBoardDto> getBoardPosts() {
-        List<BoardPost> boardPosts = boardPostRepository.findAll();
-        return boardPosts.stream()
-                .map(ResponseBoardDto::fromEntity)
-                .collect(Collectors.toList());
+    public Page<ResponseBoardDto> getBoardPosts(Pageable pageable) {
+        // 페이징 처리된 결과 가져오기
+        return boardPostRepository.findAll(pageable)
+                .map(ResponseBoardDto::fromEntity); // Page<Entity>를 Page<DTO>로 변환
     }
+
 
     @Transactional(readOnly = true)
     public ResponseBoardDto getBoardPostById(Long boardPostId) {

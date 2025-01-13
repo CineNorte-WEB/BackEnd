@@ -1,21 +1,22 @@
 package com.tave.camchelin.domain.users.controller;
 
-import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
 import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
-import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
 import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.users.dto.UserDto;
 import com.tave.camchelin.domain.users.dto.request.UpdateRequestUserDto;
 import com.tave.camchelin.domain.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -120,8 +121,12 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/boards") // 현재 로그인 사용자의 게시글 조회
-    public ResponseEntity<List<ResponseBoardDto>> getUserBoards(@RequestHeader("Authorization") String token) {
+    @GetMapping("/boards") // 현재 로그인 사용자의 게시글 조회 (페이징 적용)
+    public ResponseEntity<Page<ResponseBoardDto>> getUserBoards(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
         Long userId = userService.extractUserIdFromToken(token);
 
         if (userId == null) {
@@ -129,19 +134,17 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        List<ResponseBoardDto> boardPosts = userService.getUserBoardPosts(userId);
-
-        if (boardPosts.isEmpty()) {
-            log.info("사용자 {}의 게시글이 없습니다.", userId);
-            return ResponseEntity.noContent().build();
-        }
-
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ResponseBoardDto> boardPosts = userService.getUserBoardPosts(userId, pageable);
         return ResponseEntity.ok(boardPosts);
     }
 
-    // 사용자가 작성한 리뷰 목록 조회
-    @GetMapping("/reviews") // 현재 로그인 사용자의 리뷰 조회
-    public ResponseEntity<List<ResponseReviewDto>> getUserReviews(@RequestHeader("Authorization") String token) {
+    @GetMapping("/reviews") // 현재 로그인 사용자의 리뷰 조회 (페이징 적용)
+    public ResponseEntity<Page<ResponseReviewDto>> getUserReviews(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
         Long userId = userService.extractUserIdFromToken(token);
 
         if (userId == null) {
@@ -149,13 +152,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        List<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(userId);
-
-        if (reviewPosts.isEmpty()) {
-            log.info("사용자 {}의 리뷰가 없습니다.", userId);
-            return ResponseEntity.noContent().build();
-        }
-
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(userId, pageable);
         return ResponseEntity.ok(reviewPosts);
     }
 

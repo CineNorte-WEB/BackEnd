@@ -15,6 +15,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -56,7 +59,7 @@ class BoardPostServiceTest {
     }
 
     @Test
-    void getBoardPosts_ShouldReturnBoardPosts_WhenBoardPostsExist2() {
+    void getBoardPosts_ShouldReturnBoardPosts_WhenBoardPostsExist() {
         // Given
         User user = userRepository.findByEmail("testUser@test.co.kr").orElseThrow();
         Community community = communityRepository.findByName("boardPost").orElseThrow();
@@ -79,16 +82,18 @@ class BoardPostServiceTest {
         });
 
         // When
-        List<ResponseBoardDto> result = boardPostService.getBoardPosts();
+        Pageable pageable = PageRequest.of(0, 5); // 1페이지에 5개씩 조회
+        Page<ResponseBoardDto> result = boardPostService.getBoardPosts(pageable);
 
         // Then
-        assertThat(result).isNotNull();
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitle()).isEqualTo("Test Title");
+        assertThat(result).isNotNull(); // 결과가 null이 아님을 확인
+        assertThat(result.getContent()).hasSize(1); // 반환된 데이터가 1개인지 확인
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("Test Title"); // 제목 확인
     }
 
+
     @Test
-    void getBoardPosts_ShouldReturnBoardPosts_WhenBoardPostsExist() {
+    void getBoardPosts_ShouldReturnBoardPosts_WhenBoardPostsExist2() {
         // Given
         User user = userRepository.findByEmail("testUser@test.co.kr").orElseThrow();
         Community community = communityRepository.findById(1L).orElseThrow();
@@ -96,14 +101,14 @@ class BoardPostServiceTest {
         BoardPostDto boardPostDto = new BoardPostDto(null, user, community, "Test Title", "Test Content");
         boardPostRepository.save(boardPostDto.toEntity(user, community));
 
-
         // When
-        List<ResponseBoardDto> result = boardPostService.getBoardPosts();
+        Pageable pageable = PageRequest.of(0, 5); // 첫 번째 페이지, 페이지 크기 5
+        Page<ResponseBoardDto> result = boardPostService.getBoardPosts(pageable);
 
         // Then
-        assertThat(result).isNotNull();
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitle()).isEqualTo("Test Title");
+        assertThat(result).isNotNull(); // 결과가 null이 아님을 확인
+        assertThat(result.getContent()).hasSize(1); // 반환된 데이터가 1개인지 확인
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("Test Title"); // 제목 확인
     }
 
     @Test

@@ -6,6 +6,10 @@ import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.review_posts.service.ReviewPostService;
 import com.tave.camchelin.domain.users.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +26,12 @@ public class ReviewPostController {
 
     // 모든 리뷰 조회
     @GetMapping
-    public ResponseEntity<List<ResponseReviewDto>> getReviewPosts() {
-        List<ResponseReviewDto> reviewPosts = reviewPostService.getReviewPosts();
+    public ResponseEntity<Page<ResponseReviewDto>> getReviewPosts(
+            @RequestParam(defaultValue = "0") int page, // 기본 페이지 번호는 0
+            @RequestParam(defaultValue = "5") int size // 기본 페이지 크기는 5
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ResponseReviewDto> reviewPosts = reviewPostService.getReviewPosts(pageable);
         return ResponseEntity.ok(reviewPosts);
     }
 
@@ -67,8 +75,13 @@ public class ReviewPostController {
 
     // 특정 장소의 리뷰 목록 조회
     @GetMapping("/place/{place_id}")
-    public ResponseEntity<List<ResponseReviewDto>> getReviewsByPlace(@PathVariable("place_id") Long placeId) {
-        List<ResponseReviewDto> reviews = reviewPostService.getReviewsByPlace(placeId);
+    public ResponseEntity<Page<ResponseReviewDto>> getReviewsByPlace(
+            @PathVariable("place_id") Long placeId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ResponseReviewDto> reviews = reviewPostService.getReviewsByPlace(placeId, pageable);
         return ResponseEntity.ok(reviews);
     }
 }

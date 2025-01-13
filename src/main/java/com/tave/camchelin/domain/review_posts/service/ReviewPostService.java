@@ -13,6 +13,8 @@ import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,11 +34,9 @@ public class ReviewPostService {
 
     // 모든 리뷰 조회
     @Transactional(readOnly = true)
-    public List<ResponseReviewDto> getReviewPosts() {
-        List<ReviewPost> reviewPosts = reviewPostRepository.findAll();
-        return reviewPosts.stream()
-                .map(ResponseReviewDto::fromEntity)
-                .collect(Collectors.toList());
+    public Page<ResponseReviewDto> getReviewPosts(Pageable pageable) {
+        return reviewPostRepository.findAll(pageable)
+                .map(ResponseReviewDto::fromEntity);
     }
 
     // 특정 리뷰 조회
@@ -100,10 +100,8 @@ public class ReviewPostService {
 
     // 특정 장소의 리뷰 조회
     @Transactional(readOnly = true)
-    public List<ResponseReviewDto> getReviewsByPlace(Long placeId) {
-        List<ReviewPost> reviews = reviewPostRepository.findByPlaceId(placeId);
-        return reviews.stream()
-                .map(ResponseReviewDto::fromEntity)
-                .collect(Collectors.toList());
+    public Page<ResponseReviewDto> getReviewsByPlace(Long placeId, Pageable pageable) {
+        return reviewPostRepository.findByPlaceId(placeId, pageable)
+                .map(ResponseReviewDto::fromEntity);
     }
 }

@@ -6,6 +6,9 @@ import com.tave.camchelin.domain.board_posts.dto.request.UpdateRequestBoardDto;
 import com.tave.camchelin.domain.board_posts.service.BoardPostService;
 import com.tave.camchelin.domain.users.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +25,16 @@ public class BoardPostController {
 
     // 게시글 목록 전체 조회
     @GetMapping
-    public ResponseEntity<List<ResponseBoardDto>> getBoardPosts() {
-        List<ResponseBoardDto> boardPosts = boardPostService.getBoardPosts();
+    public ResponseEntity<Page<ResponseBoardDto>> getBoardPosts(
+            @RequestParam(defaultValue = "0") int page, // 기본 페이지 번호는 0
+            @RequestParam(defaultValue = "5") int size // 기본 페이지 크기는 5
+    ) {
+        Page<ResponseBoardDto> boardPosts = boardPostService.getBoardPosts(
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
+        );
         return ResponseEntity.ok(boardPosts);
     }
+
 
     // 특정 게시글 조회
     @GetMapping("/{board_post_id}")

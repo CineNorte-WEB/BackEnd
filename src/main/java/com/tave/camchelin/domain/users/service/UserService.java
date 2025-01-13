@@ -20,6 +20,8 @@ import com.tave.camchelin.domain.users.repository.UserRepository;
 import com.tave.camchelin.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -118,25 +120,6 @@ public class UserService {
         }
     }
 
-    private void addTokenToBlacklist(String accessToken) {
-        long expiration = jwtService.getExpiration(accessToken);
-        long currentTime = System.currentTimeMillis();
-        long ttl = expiration - currentTime;
-
-        if (ttl > 0) {
-            try {
-                // Redis 블랙리스트에 추가
-                String redisKey = "blacklist:" + accessToken;
-                redisTemplate.opsForValue().set(redisKey, "true", ttl, TimeUnit.MILLISECONDS);
-                log.info("토큰 {} 블랙리스트에 추가됨 (TTL: {}ms)", accessToken, ttl);
-            } catch (Exception e) {
-                log.error("Redis에 블랙리스트 추가 실패: {}", e.getMessage());
-            }
-        } else {
-            log.info("토큰 {}은 이미 만료되어 블랙리스트에 추가되지 않음", accessToken);
-        }
-    }
-
     @Transactional(readOnly = true)
     public List<PlaceDto> getUserBookmarks(Long userId) {
         User user = userRepository.findById(userId)
@@ -179,41 +162,21 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseBoardDto> getUserBoardPosts(Long userId) {
-        User user = userRepository.findById(userId)  // 사용자 ID를 전달 받거나 세션에서 가져와야 할 수 있음
-                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
-        List<BoardPost> boardPosts = boardPostRepository.findByUserId(user.getId());
+    public Page<ResponseBoardDto> getUserBoardPosts(Long userId, Pageable pageable) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾지 못했습니다."));
 
-        // 방어 코드: Null 방지
-        if (boardPosts == null || boardPosts.isEmpty()) {
-            log.warn("사용자 {}의 게시글이 없습니다.", userId);
-            return List.of();
-        }
-
-        // DTO로 변환
-        return boardPosts.stream()
-                .filter(Objects::nonNull) // Null 방지 필터
-                .map(ResponseBoardDto::fromEntity)
-                .collect(Collectors.toList());
+        return boardPostRepository.findByUserId(userId, pageable)
+                .map(ResponseBoardDto::fromEntity);
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseReviewDto> getUserReviewPosts(Long userId) {
-        User user = userRepository.findById(userId)  // 사용자 ID를 전달 받거나 세션에서 가져와야 할 수 있음
-                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
-        List<ReviewPost> reviewPosts = reviewPostRepository.findByUserId(user.getId());
+    public Page<ResponseReviewDto> getUserReviewPosts(Long userId, Pageable pageable) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾지 못했습니다."));
 
-        // 방어 코드: Null 방지
-        if (reviewPosts == null || reviewPosts.isEmpty()) {
-            log.warn("사용자 {}의 리뷰가 없습니다.", userId);
-            return List.of();
-        }
-
-        // DTO로 변환
-        return reviewPosts.stream()
-                .filter(Objects::nonNull) // Null 방지 필터
-                .map(ResponseReviewDto::fromEntity)
-                .collect(Collectors.toList());
+        return reviewPostRepository.findByUserId(userId, pageable)
+                .map(ResponseReviewDto::fromEntity);
     }
 
 

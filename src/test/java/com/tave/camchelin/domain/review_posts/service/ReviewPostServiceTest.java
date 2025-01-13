@@ -17,6 +17,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -89,12 +93,16 @@ class ReviewPostServiceTest {
         reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title1", "Content1"));
         reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title2", "Content2"));
 
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdAt")); // 페이징 처리
+
         // When
-        List<ResponseReviewDto> reviewPosts = reviewPostService.getReviewPosts();
+        Page<ResponseReviewDto> reviewPosts = reviewPostService.getReviewPosts(pageable);
 
         // Then
         assertThat(reviewPosts).isNotNull();
-        assertThat(reviewPosts.size()).isEqualTo(2);
+        assertThat(reviewPosts.getContent()).hasSize(2); // 실제 데이터 검증
+        assertThat(reviewPosts.getContent().get(0).getTitle()).isEqualTo("Title1");
+        assertThat(reviewPosts.getContent().get(1).getTitle()).isEqualTo("Title2");
     }
 
     @Test
@@ -178,11 +186,15 @@ class ReviewPostServiceTest {
         reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title1", "Content1"));
         reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title2", "Content2"));
 
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdAt")); // 페이징 처리
+
         // When
-        List<ResponseReviewDto> reviews = reviewPostService.getReviewsByPlace(place.getId());
+        Page<ResponseReviewDto> reviews = reviewPostService.getReviewsByPlace(place.getId(), pageable);
 
         // Then
         assertThat(reviews).isNotNull();
-        assertThat(reviews.size()).isEqualTo(2);
+        assertThat(reviews.getContent()).hasSize(2); // 실제 데이터 검증
+        assertThat(reviews.getContent().get(0).getTitle()).isEqualTo("Title1");
+        assertThat(reviews.getContent().get(1).getTitle()).isEqualTo("Title2");
     }
 }
