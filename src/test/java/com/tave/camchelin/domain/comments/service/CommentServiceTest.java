@@ -64,7 +64,7 @@ class CommentServiceTest {
 
         Community community = communityRepository.findByName("boardPost").orElseThrow();
 
-        BoardPostDto boardPostDto = new BoardPostDto(null, "Test Title", "Test Content", user, community);
+        BoardPostDto boardPostDto = new BoardPostDto(null, user, community, "Test Title", "Test Content");
         boardPostRepository.save(boardPostDto.toEntity(user, community));
     }
 

@@ -1,13 +1,15 @@
 package com.tave.camchelin.domain.users.service;
 
-import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
+import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
+import com.tave.camchelin.domain.board_posts.entity.BoardPost;
 import com.tave.camchelin.domain.board_posts.repository.BoardPostRepository;
 import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
 import com.tave.camchelin.domain.bookmarks.repository.BookmarkRepository;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.repository.PlaceRepository;
-import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
+import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
+import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
 import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
@@ -18,12 +20,15 @@ import com.tave.camchelin.domain.users.repository.UserRepository;
 import com.tave.camchelin.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -99,39 +104,19 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long userId, String token) {
-        // 1. 유저 확인 및 삭제
+        // 1. 사용자 삭제
         userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-
-        userRepository.deleteById(userId); // 사용자 삭제
+        userRepository.deleteById(userId);
         log.info("사용자 ID {} 삭제 완료", userId);
 
-        // 2. Redis 블랙리스트에 토큰 추가
+        // 2. 블랙리스트 등록 (JwtService 호출)
         if (token != null && !token.isEmpty()) {
             try {
-                addTokenToBlacklist(token);
+                jwtService.addTokenToBlacklist(token);
             } catch (Exception e) {
                 log.error("토큰 블랙리스트 추가 중 오류 발생: {}", e.getMessage());
             }
-        }
-    }
-
-    private void addTokenToBlacklist(String accessToken) {
-        long expiration = jwtService.getExpiration(accessToken);
-        long currentTime = System.currentTimeMillis();
-        long ttl = expiration - currentTime;
-
-        if (ttl > 0) {
-            try {
-                // Redis 블랙리스트에 추가
-                String redisKey = "blacklist:" + accessToken;
-                redisTemplate.opsForValue().set(redisKey, "true", ttl, TimeUnit.MILLISECONDS);
-                log.info("토큰 {} 블랙리스트에 추가됨 (TTL: {}ms)", accessToken, ttl);
-            } catch (Exception e) {
-                log.error("Redis에 블랙리스트 추가 실패: {}", e.getMessage());
-            }
-        } else {
-            log.info("토큰 {}은 이미 만료되어 블랙리스트에 추가되지 않음", accessToken);
         }
     }
 
@@ -177,30 +162,41 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<BoardPostDto> getUserBoardPosts(Long userId) {
-        User user = userRepository.findById(userId)  // 사용자 ID를 전달 받거나 세션에서 가져와야 할 수 있음
-                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
-        return boardPostRepository.findByUserId(user.getId())
-                .stream()
-                .map(BoardPostDto::fromEntity)
-                .collect(Collectors.toList());
+    public Page<ResponseBoardDto> getUserBoardPosts(Long userId, Pageable pageable) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾지 못했습니다."));
+
+        return boardPostRepository.findByUserId(userId, pageable)
+                .map(ResponseBoardDto::fromEntity);
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewPostDto> getUserReviewPosts(Long userId) {
-        User user = userRepository.findById(userId)  // 사용자 ID를 전달 받거나 세션에서 가져와야 할 수 있음
-                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
-        return reviewPostRepository.findByUserId(user.getId())
-                .stream()
-                .map(ReviewPostDto::fromEntity)
-                .collect(Collectors.toList());
+    public Page<ResponseReviewDto> getUserReviewPosts(Long userId, Pageable pageable) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾지 못했습니다."));
+
+        return reviewPostRepository.findByUserId(userId, pageable)
+                .map(ResponseReviewDto::fromEntity);
     }
 
+
+
     @Transactional(readOnly = true)
-    public Long getUserIdByEmail(String email) {
-        User user = userRepository.findByEmail(email)
+    public Long extractUserIdFromToken(String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("토큰이 없거나 올바르지 않은 형식입니다.");
+        }
+
+        String jwtToken = token.substring(7); // "Bearer " 제거
+
+        // JwtService를 사용해 이메일 추출
+        String email = jwtService.extractEmail(jwtToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
+
+        // 이메일로 사용자 ID 조회
+        return userRepository.findByEmail(email)
+                .map(User::getId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. 이메일: " + email));
-        return user.getId();
     }
 
 }

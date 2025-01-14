@@ -32,22 +32,19 @@ public class ReviewPost extends BaseEntity {
     @JoinColumn(name = "place_id", nullable = false)
     private Place place;
 
+    @Column(nullable = false)
+    private String title;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-//    @Column(name = "positive_rating", nullable = false)
-//    private Float positiveRating;
-//
-//    @Column(name = "negative_rating", nullable = false)
-//    private Float negativeRating;
-
-    public void edit(Place place, String content) {
-        // Place가 변경 가능한 경우
+    public void edit(Place place, String title, String content) {
         if (place != null) {
             this.place = place;
         }
-
-        // Content가 null 또는 공백이 아닌 경우에만 변경
+        if (title != null && !title.isBlank()) {
+            this.title = title;
+        }
         if (content != null && !content.isBlank()) {
             this.content = content;
         }
