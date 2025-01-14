@@ -27,7 +27,7 @@ public class ReviewAnalysisService {
     public ReviewAnalysis analyzeAndSave(RequestModelDto requestModelDto, Place place) {
 
         //모델 api 호출
-        ResponseModelDto responseModelDto =  CallApiService.mentApi(requestModelDto);
+        ResponseModelDto responseModelDto =  CallApiService.callModel1Api(requestModelDto);
 
         //분석 결과 저장
         ReviewAnalysis reviewAnalysis = ReviewAnalysis.builder()
