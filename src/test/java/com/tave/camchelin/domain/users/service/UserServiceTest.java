@@ -25,6 +25,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -211,85 +214,95 @@ class UserServiceTest {
 
 
     @Test
-    void getUserBoardPosts_ShouldReturnBoardPosts_WhenUserHasBoardPosts() {
+    void getUserBoardPosts_ShouldReturnBoardPosts_WhenUserHasBoardPosts_WithPagination() {
         // Given
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findById(1L).orElseThrow();
 
-        boardPostRepository.save(BoardPost.builder()
-                .user(user)
-                .community(community)
-                .title("Test Board Post 1")
-                .content("Content of Board Post 1")
-                .build());
-        boardPostRepository.save(BoardPost.builder()
-                .user(user)
-                .community(community)
-                .title("Test Board Post 2")
-                .content("Content of Board Post 2")
-                .build());
+        // 게시글 5개 생성
+        for (int i = 1; i <= 5; i++) {
+            boardPostRepository.save(BoardPost.builder()
+                    .user(user)
+                    .community(community)
+                    .title("Test Board Post " + i)
+                    .content("Content of Board Post " + i)
+                    .build());
+        }
+
+        // 페이징 설정: 1페이지, 3개씩
+        Pageable pageable = PageRequest.of(0, 3);
 
         // When
-        List<ResponseBoardDto> boardPosts = userService.getUserBoardPosts(user.getId());
+        Page<ResponseBoardDto> boardPosts = userService.getUserBoardPosts(user.getId(), pageable);
 
         // Then
-        assertThat(boardPosts).isNotNull().hasSize(2);
-        assertThat(boardPosts.get(0).getTitle()).isEqualTo("Test Board Post 1");
-        assertThat(boardPosts.get(1).getTitle()).isEqualTo("Test Board Post 2");
+        assertThat(boardPosts).isNotNull();
+        assertThat(boardPosts.getContent()).hasSize(3); // 첫 페이지의 데이터 수 확인
+        assertThat(boardPosts.getTotalElements()).isEqualTo(5); // 전체 게시글 수 확인
+        assertThat(boardPosts.getContent().get(0).getTitle()).isEqualTo("Test Board Post 1"); // 첫 번째 게시글 확인
+        assertThat(boardPosts.getContent().get(1).getTitle()).isEqualTo("Test Board Post 2"); // 두 번째 게시글 확인
+        assertThat(boardPosts.getContent().get(2).getTitle()).isEqualTo("Test Board Post 3"); // 세 번째 게시글 확인
     }
 
+
     @Test
-    void getUserBoardPosts_ShouldReturnEmptyList_WhenUserHasNoBoardPosts() {
+    void getUserBoardPosts_ShouldReturnEmptyPage_WhenUserHasNoBoardPosts() {
         // Given
         User user = userRepository.findByEmail("testUser").orElseThrow();
 
+        Pageable pageable = PageRequest.of(0, 3);
+
         // When
-        List<ResponseBoardDto> boardPosts = userService.getUserBoardPosts(user.getId());
+        Page<ResponseBoardDto> boardPosts = userService.getUserBoardPosts(user.getId(), pageable);
 
         // Then
-        assertThat(boardPosts).isNotNull().isEmpty();
+        assertThat(boardPosts).isNotNull();
+        assertThat(boardPosts.getContent()).isEmpty();
+        assertThat(boardPosts.getTotalElements()).isEqualTo(0);
     }
 
     @Test
-    void getUserReviewPosts_ShouldReturnReviewPosts_WhenUserHasReviewPosts() {
+    void getUserReviewPosts_ShouldReturnReviewPosts_WhenUserHasReviewPosts_WithPagination() {
         // Given
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Community community = communityRepository.findById(2L).orElseThrow();
         Place place = placeRepository.findById(1L).orElseThrow();
 
+        for (int i = 1; i <= 2; i++) {
+            reviewPostRepository.save(ReviewPost.builder()
+                    .user(user)
+                    .community(community)
+                    .place(place)
+                    .content("Review Content " + i)
+                    .build());
+        }
 
-        reviewPostRepository.save(ReviewPost.builder()
-                .user(user)
-                .community(community)
-                .place(place)
-                .content("Review Content 1")
-                .build());
-        reviewPostRepository.save(ReviewPost.builder()
-                .user(user)
-                .community(community)
-                .place(place)
-                .content("Review Content 2")
-                .build());
+        Pageable pageable = PageRequest.of(0, 2);
 
         // When
-        List<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(user.getId());
+        Page<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(user.getId(), pageable);
 
         // Then
-        assertThat(reviewPosts).isNotNull().hasSize(2);
-        assertThat(reviewPosts.get(0).getContent()).isEqualTo("Review Content 1");
-        assertThat(reviewPosts.get(1).getContent()).isEqualTo("Review Content 2");
+        assertThat(reviewPosts).isNotNull();
+        assertThat(reviewPosts.getContent()).hasSize(2);
+        assertThat(reviewPosts.getContent().get(0).getContent()).isEqualTo("Review Content 1");
+        assertThat(reviewPosts.getContent().get(1).getContent()).isEqualTo("Review Content 2");
     }
 
     @Test
-    void getUserReviewPosts_ShouldReturnEmptyList_WhenUserHasNoReviewPosts() {
+    void getUserReviewPosts_ShouldReturnEmptyPage_WhenUserHasNoReviewPosts() {
         // Given
         User user = userRepository.findByEmail("testUser").orElseThrow();
 
+        Pageable pageable = PageRequest.of(0, 3);
+
         // When
-        List<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(user.getId());
+        Page<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(user.getId(), pageable);
 
         // Then
-        assertThat(reviewPosts).isNotNull().isEmpty();
+        assertThat(reviewPosts).isNotNull();
+        assertThat(reviewPosts.getContent()).isEmpty();
+        assertThat(reviewPosts.getTotalElements()).isEqualTo(0);
     }
 
 }

@@ -46,7 +46,6 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final RedisTemplate<String, String> redisTemplate;
 
 
     @Transactional
