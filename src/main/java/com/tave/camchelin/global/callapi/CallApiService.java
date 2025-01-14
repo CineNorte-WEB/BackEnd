@@ -14,20 +14,20 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class CallApiService {
 
     private final WebClient webClient;
-    private static final String modelUrl  = "http://127.0.0.1:8000/generate";
+    private static final String MODEL1_URL = "http://127.0.0.1:8001/analyze";
     private static final String MODEL2_URL = "http://127.0.0.1:8000/analyze";
 
     public CallApiService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
     }
 
-    public static ResponseModelDto mentApi(RequestModelDto requestMentDto) {
+    public static ResponseModelDto callModel1Api(RequestModelDto requestMentDto) {
 
         WebClient webClient = WebClient.builder().build();
 
         return webClient
                 .post()
-                .uri(modelUrl)
+                .uri(MODEL1_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestMentDto)
                 .retrieve()
