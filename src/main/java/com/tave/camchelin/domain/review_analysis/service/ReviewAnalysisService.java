@@ -13,6 +13,7 @@ import com.tave.camchelin.domain.review_analysis.repository.Model2ResultsReposit
 import com.tave.camchelin.domain.review_analysis.repository.ReviewAnalysisStoreRepository;
 import com.tave.camchelin.global.callapi.CallApiService;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,7 +22,9 @@ import java.util.List;
 @Service
 public class ReviewAnalysisService {
 
+    @Autowired
     private final Model1ResultsRepository model1Repository;
+    @Autowired
     private final Model2ResultsRepository model2Repository;
     private final CallApiService callApiService;
 
