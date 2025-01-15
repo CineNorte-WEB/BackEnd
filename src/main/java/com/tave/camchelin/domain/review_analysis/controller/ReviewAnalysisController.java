@@ -5,6 +5,7 @@ import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.service.PlaceService;
 import com.tave.camchelin.domain.review_analysis.dto.RequestModelDto;
 import com.tave.camchelin.domain.review_analysis.dto.ResponseModelDto;
+import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
 import com.tave.camchelin.domain.review_analysis.entity.ReviewAnalysis;
 import com.tave.camchelin.domain.review_analysis.service.ModelIntegrationService;
 import com.tave.camchelin.domain.review_analysis.service.ReviewAnalysisService;
@@ -18,51 +19,29 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/review-analysis")
-public class ReviewAnalysisController { //db에 저장
+public class ReviewAnalysisController {
 
-    //private final ReviewAnalysisService reviewAnalysisService;
-    private final ModelIntegrationService modelIntegrationService;
+    private final ReviewAnalysisService reviewAnalysisService;
     private final PlaceService placeService;
 
-    public ReviewAnalysisController(ModelIntegrationService modelIntegrationService, PlaceService placeService) {
-        this.modelIntegrationService = modelIntegrationService;
+    public ReviewAnalysisController(ReviewAnalysisService reviewAnalysisService, PlaceService placeService) {
+        this.reviewAnalysisService = reviewAnalysisService;
         this.placeService = placeService;
     }
 
-    /**
-     * 모델 분석 결과 호출 및 저장
-     */
-//    @PostMapping("/analyze-and-save")
-//    public ResponseEntity<?> analyzeAndSave(@RequestBody RequestModelDto requestModelDto) {
-//        try {
-//            // Place 엔티티 조회
-//            PlaceDto placeDto = placeService.getPlaceByName(requestModelDto.storename());
-//            Place place = placeDto.toEntity(placeService.getUnivEntityByName(placeDto.getUnivName()));
-//
-//            // 모델 호출 및 결과 저장
-//            ReviewAnalysis savedReview = reviewAnalysisService.analyzeAndSave(requestModelDto, place);
-//
-//            return ResponseEntity.ok(savedReview);
-//
-//        } catch (Exception e) {
-//            return ResponseEntity.internalServerError().body("Error occurred: " + e.getMessage());
-//        }
-//    }
-
-    @PostMapping("/process-and-save")
-    public ResponseEntity<?> processAndSave(@RequestBody RequestModelDto requestModelDto) {
+    @PostMapping("/analyze-and-save")
+    public ResponseEntity<?> analyzeAndSave(@RequestBody RequestModelDto requestDto) {
         try {
-            // Place 정보 조회
-            PlaceDto placeDto = placeService.getPlaceByName(requestModelDto.storename());
+            // Place 조회
+            PlaceDto placeDto = placeService.getPlaceByName(requestDto.storename());
             Place place = placeDto.toEntity(placeService.getUnivEntityByName(placeDto.getUnivName()));
 
-            // 모델1과 모델2 호출 및 결과 저장
-            List<ReviewAnalysis> savedResults = modelIntegrationService.processAndSave(requestModelDto, place);
+            // 모델 분석 및 결과 저장
+            List<Model2Results> savedResults = reviewAnalysisService.analyzeAndSave(requestDto, place);
 
             return ResponseEntity.ok(savedResults);
-
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error occurred: " + e.getMessage());
         }
     }
 }

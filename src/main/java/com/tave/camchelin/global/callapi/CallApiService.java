@@ -21,28 +21,31 @@ public class CallApiService {
         this.webClient = webClientBuilder.build();
     }
 
-    public static ResponseModelDto callModel1Api(RequestModelDto requestMentDto) {
-
-        WebClient webClient = WebClient.builder().build();
-
-        return webClient
-                .post()
-                .uri(MODEL1_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(requestMentDto)
-                .retrieve()
-                .bodyToMono(ResponseModelDto.class)
-                .block();
+    public ResponseModelDto callModel1Api(RequestModelDto requestDto) {
+        try {
+            return webClient.post()
+                    .uri(MODEL1_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(requestDto)
+                    .retrieve()
+                    .bodyToMono(ResponseModelDto.class)
+                    .block();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to call Model1 API: " + e.getMessage(), e);
+        }
     }
 
     public Model2ResponseDto callModel2Api(Model2RequestDto requestDto) {
-        return webClient
-                .post()
-                .uri(MODEL2_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(requestDto)
-                .retrieve()
-                .bodyToMono(Model2ResponseDto.class)
-                .block();
+        try {
+            return webClient.post()
+                    .uri(MODEL2_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(requestDto)
+                    .retrieve()
+                    .bodyToMono(Model2ResponseDto.class)
+                    .block();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to call Model2 API: " + e.getMessage(), e);
+        }
     }
 }
