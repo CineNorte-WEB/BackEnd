@@ -61,9 +61,10 @@ public class User extends BaseEntity {
         this.refreshToken = null;
     }
 
-    //== 패스워드 암호화 ==//
-    public void encodePassword(PasswordEncoder passwordEncoder){
-        this.password = passwordEncoder.encode(password);
+    public void updatePassword(String encodedPassword) {
+        if (encodedPassword == null || encodedPassword.isEmpty()) {
+            throw new IllegalArgumentException("비밀번호는 비어 있을 수 없습니다.");
+        }
+        this.password = encodedPassword;
     }
-
 }

@@ -6,10 +6,12 @@ import com.tave.camchelin.domain.review_analysis.dto.Model2ResponseDto;
 import com.tave.camchelin.domain.review_analysis.entity.ReviewAnalysis;
 import com.tave.camchelin.domain.review_analysis.repository.ReviewAnalysisStoreRepository;
 import com.tave.camchelin.global.callapi.CallApiService;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class Model2IntegrationService {
 
     private final ReviewAnalysisStoreRepository repository;

@@ -1,7 +1,6 @@
 package com.tave.camchelin.domain.users.service;
 
 import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
-import com.tave.camchelin.domain.board_posts.entity.BoardPost;
 import com.tave.camchelin.domain.board_posts.repository.BoardPostRepository;
 import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
 import com.tave.camchelin.domain.bookmarks.repository.BookmarkRepository;
@@ -9,12 +8,13 @@ import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.repository.PlaceRepository;
 import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
-import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
 import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import com.tave.camchelin.domain.users.dto.UserDto;
+import com.tave.camchelin.domain.users.dto.request.FindPwRequestDto;
 import com.tave.camchelin.domain.users.dto.request.UpdateRequestUserDto;
+import com.tave.camchelin.domain.users.dto.response.FindPwResponseDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import com.tave.camchelin.global.jwt.JwtService;
@@ -22,14 +22,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -46,6 +46,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final MailSender mailSender;
 
 
     @Transactional
@@ -198,5 +199,49 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. 이메일: " + email));
     }
 
+
+    @Transactional
+    public String findPw(FindPwRequestDto request) throws Exception {
+        // 이메일 검증
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() ->
+                new BadCredentialsException("유효하지 않은 이메일입니다."));
+
+        // 임시비밀번호 발급
+        char[] charSet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+                'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                '!', '@', '#', '$', '%', '^', '&', '*' };
+
+        StringBuilder tempPw = new StringBuilder();
+
+        for (int i = 0; i < 10; i++) {
+            int idx = (int) (charSet.length * Math.random());
+            tempPw.append(charSet[idx]);
+        }
+
+        // set findPwResponseDto
+        FindPwResponseDto newDto = FindPwResponseDto.builder()
+                .receiveAddress(request.getEmail())
+                .mailTitle("임시 비밀번호 발급")
+                .mailContent("메일 발송 테스트 중입니다.\n" +
+                        "임시 비밀번호는 " + tempPw + " 입니다.")
+                .build();
+
+        // send e-mail
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setFrom("tjdgud3488@gmail.com");
+        message.setTo(newDto.getReceiveAddress());
+        message.setReplyTo("tjdgus3488@gmail.com");
+        message.setSubject(newDto.getMailTitle());
+        message.setText(newDto.getMailContent());
+
+        mailSender.send(message);
+
+        // 임시비밀번호로 변경
+        user.updatePassword(passwordEncoder.encode(tempPw));
+        userRepository.save(user);
+
+        return "임시비밀번호 발급 완료";
+    }
 }
 

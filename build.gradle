@@ -29,6 +29,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security' //시큐리티 추가
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0' //스웨거
+	implementation 'org.springframework.boot:spring-boot-starter-mail'//smtp(임시비밀번호)
 
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

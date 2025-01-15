@@ -4,6 +4,7 @@ import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.users.dto.UserDto;
+import com.tave.camchelin.domain.users.dto.request.FindPwRequestDto;
 import com.tave.camchelin.domain.users.dto.request.UpdateRequestUserDto;
 import com.tave.camchelin.domain.users.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -155,6 +157,22 @@ public class UserController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(userId, pageable);
         return ResponseEntity.ok(reviewPosts);
+    }
+
+
+    @PostMapping("/findpw")
+    public ResponseEntity<String> findPassword(@RequestBody FindPwRequestDto request) {
+        try {
+            // 비밀번호 찾기 서비스 호출
+            String status = userService.findPw(request);
+            return ResponseEntity.ok(status); // 성공 시 응답
+        } catch (BadCredentialsException e) {
+            log.error("비밀번호 찾기 실패: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 이메일입니다.");
+        } catch (Exception e) {
+            log.error("비밀번호 찾기 중 오류 발생: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호 찾기 요청 처리 중 오류가 발생했습니다.");
+        }
     }
 
 }
