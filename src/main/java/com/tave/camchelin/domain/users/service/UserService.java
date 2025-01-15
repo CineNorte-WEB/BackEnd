@@ -13,6 +13,7 @@ import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import com.tave.camchelin.domain.users.dto.UserDto;
 import com.tave.camchelin.domain.users.dto.request.FindPwRequestDto;
+import com.tave.camchelin.domain.users.dto.request.UpdateRequestPwDto;
 import com.tave.camchelin.domain.users.dto.request.UpdateRequestUserDto;
 import com.tave.camchelin.domain.users.dto.response.FindPwResponseDto;
 import com.tave.camchelin.domain.users.entity.User;
@@ -243,5 +244,34 @@ public class UserService {
 
         return "임시비밀번호 발급 완료";
     }
+
+    @Transactional
+    public void updatePassword(String token, UpdateRequestPwDto requestDto) {
+        // 토큰에서 사용자 ID 추출
+        Long userId = extractUserIdFromToken(token);
+
+        if (userId == null) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
+
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 현재 비밀번호 확인
+        if (!passwordEncoder.matches(requestDto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새 비밀번호와 확인 비밀번호 일치 확인
+        if (!requestDto.getNewPassword().equals(requestDto.getConfirmPassword())) {
+            throw new IllegalArgumentException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 비밀번호 업데이트
+        user.updatePassword(passwordEncoder.encode(requestDto.getNewPassword()));
+        userRepository.save(user); // 영속성 컨텍스트에 자동 반영
+    }
 }
+
 

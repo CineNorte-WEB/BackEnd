@@ -5,6 +5,7 @@ import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.users.dto.UserDto;
 import com.tave.camchelin.domain.users.dto.request.FindPwRequestDto;
+import com.tave.camchelin.domain.users.dto.request.UpdateRequestPwDto;
 import com.tave.camchelin.domain.users.dto.request.UpdateRequestUserDto;
 import com.tave.camchelin.domain.users.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -175,4 +176,19 @@ public class UserController {
         }
     }
 
+    @PutMapping("/updatepw")
+    public ResponseEntity<String> updatePassword(@RequestHeader("Authorization") String token,
+                                                 @RequestBody UpdateRequestPwDto requestDto) {
+        try {
+            // 비밀번호 업데이트 로직 호출
+            userService.updatePassword(token, requestDto);
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (IllegalArgumentException e) {
+            log.error("비밀번호 변경 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error("비밀번호 변경 중 오류 발생: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호 변경 중 오류가 발생했습니다.");
+        }
+    }
 }
