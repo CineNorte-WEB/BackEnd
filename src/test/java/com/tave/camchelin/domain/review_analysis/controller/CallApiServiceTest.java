@@ -1,26 +1,9 @@
 package com.tave.camchelin.domain.review_analysis.controller;
 
-import com.tave.camchelin.domain.review_analysis.dto.Model2RequestDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model2ResponseDto;
-import com.tave.camchelin.domain.review_analysis.dto.RequestModelDto;
-import com.tave.camchelin.domain.review_analysis.dto.ResponseModelDto;
-import com.tave.camchelin.global.callapi.CallApiService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 
 @SpringBootTest

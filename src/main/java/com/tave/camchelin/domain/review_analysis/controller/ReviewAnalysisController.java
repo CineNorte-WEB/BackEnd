@@ -3,11 +3,8 @@ package com.tave.camchelin.domain.review_analysis.controller;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.service.PlaceService;
-import com.tave.camchelin.domain.review_analysis.dto.RequestModelDto;
-import com.tave.camchelin.domain.review_analysis.dto.ResponseModelDto;
+import com.tave.camchelin.domain.review_analysis.dto.Model1RequestDto;
 import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
-import com.tave.camchelin.domain.review_analysis.entity.ReviewAnalysis;
-import com.tave.camchelin.domain.review_analysis.service.ModelIntegrationService;
 import com.tave.camchelin.domain.review_analysis.service.ReviewAnalysisService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +27,7 @@ public class ReviewAnalysisController {
     }
 
     @PostMapping("/analyze-and-save")
-    public ResponseEntity<?> analyzeAndSave(@RequestBody RequestModelDto requestDto) {
+    public ResponseEntity<?> analyzeAndSave(@RequestBody Model1RequestDto requestDto) {
         try {
             // Place 조회
             PlaceDto placeDto = placeService.getPlaceByName(requestDto.storename());

@@ -1,28 +1,8 @@
 package com.tave.camchelin.domain.review_analysis.controller;
 
-import com.tave.camchelin.domain.places.entity.Place;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
-import com.tave.camchelin.domain.review_analysis.dto.RequestModelDto;
-import com.tave.camchelin.domain.review_analysis.dto.ResponseModelDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model2RequestDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model2ResponseDto;
-import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
-import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
-import com.tave.camchelin.domain.review_analysis.service.ReviewAnalysisService;
-import com.tave.camchelin.domain.review_analysis.repository.Model1ResultsRepository;
-import com.tave.camchelin.domain.review_analysis.repository.Model2ResultsRepository;
-import com.tave.camchelin.global.callapi.CallApiService;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
 public class ModelIntegrationTest {

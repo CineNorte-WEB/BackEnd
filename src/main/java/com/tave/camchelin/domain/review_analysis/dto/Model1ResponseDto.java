@@ -1,6 +1,6 @@
 package com.tave.camchelin.domain.review_analysis.dto;
 
-public record ResponseModelDto (
+public record Model1ResponseDto(
     String StoreName,
     String Positive_Keywords,
     String Negative_Keywords){
