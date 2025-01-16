@@ -1,23 +1,6 @@
 package com.tave.camchelin.domain.review_analysis.controller;
 
-import com.tave.camchelin.domain.places.dto.PlaceDto;
-import com.tave.camchelin.domain.places.entity.Place;
-import com.tave.camchelin.domain.places.service.PlaceService;
-import com.tave.camchelin.domain.review_analysis.dto.Model2RequestDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model2ResponseDto;
-import com.tave.camchelin.domain.review_analysis.entity.ReviewAnalysis;
-import com.tave.camchelin.domain.review_analysis.service.Model2IntegrationService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 class Model2ControllerTest {
 

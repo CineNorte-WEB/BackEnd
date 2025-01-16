@@ -18,15 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ReviewAnalysisService {
+public class ReviewProcessService {
 
-    @Autowired
+    //@Autowired
     private final Model1ResultsRepository model1Repository;
-    @Autowired
+    //@Autowired
     private final Model2ResultsRepository model2Repository;
     private final CallApiService callApiService;
 
-    public ReviewAnalysisService(
+    public ReviewProcessService(
             Model1ResultsRepository model1Repository,
             Model2ResultsRepository model2Repository,
             CallApiService callApiService

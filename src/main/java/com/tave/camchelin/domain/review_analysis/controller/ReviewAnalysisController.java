@@ -5,7 +5,7 @@ import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.service.PlaceService;
 import com.tave.camchelin.domain.review_analysis.dto.Model1RequestDto;
 import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
-import com.tave.camchelin.domain.review_analysis.service.ReviewAnalysisService;
+import com.tave.camchelin.domain.review_analysis.service.ReviewProcessService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,10 +18,10 @@ import java.util.List;
 @RequestMapping("/review-analysis")
 public class ReviewAnalysisController {
 
-    private final ReviewAnalysisService reviewAnalysisService;
+    private final ReviewProcessService reviewAnalysisService;
     private final PlaceService placeService;
 
-    public ReviewAnalysisController(ReviewAnalysisService reviewAnalysisService, PlaceService placeService) {
+    public ReviewAnalysisController(ReviewProcessService reviewAnalysisService, PlaceService placeService) {
         this.reviewAnalysisService = reviewAnalysisService;
         this.placeService = placeService;
     }
