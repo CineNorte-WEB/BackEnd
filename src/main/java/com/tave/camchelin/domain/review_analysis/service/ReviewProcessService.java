@@ -43,15 +43,15 @@ public class ReviewProcessService {
 
         Model1Results model1Result = Model1Results.builder()
                 .storeName(requestDto.storeName())
-                .positiveKeywords(List.of(model1Response.positiveKeywords().split(", ")))
-                .negativeKeywords(List.of(model1Response.negativeKeywords().split(", ")))
+                .positiveKeywords(model1Response.positiveKeywords())
+                .negativeKeywords(model1Response.negativeKeywords())
                 .build();
         Model1Results savedModel1Result = model1Repository.save(model1Result);
 
         // Step 2: 모델2 호출 및 저장
         List<String> model2Keywords = new ArrayList<>();
-        model2Keywords.addAll(List.of(model1Response.positiveKeywords().split(", ")));
-        model2Keywords.addAll(List.of(model1Response.negativeKeywords().split(", ")));
+        model2Keywords.addAll(model1Response.positiveKeywords());
+        model2Keywords.addAll(model1Response.negativeKeywords());
 
         Model2RequestDto model2Request = new Model2RequestDto(requestDto.storeName(), model2Keywords);
         Model2ResponseDto model2Response = callApiService.callModel2Api(model2Request);

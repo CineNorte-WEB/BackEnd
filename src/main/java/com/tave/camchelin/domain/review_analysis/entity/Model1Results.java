@@ -32,8 +32,10 @@ public class Model1Results extends BaseEntity {
     @Column(name = "negative_keywords", columnDefinition = "TEXT")
     private List<String> negativeKeywords;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    private LocalDateTime updatedAt;
+//    @Column(nullable = false, updatable = false)
+//    private LocalDateTime createdAt = LocalDateTime.now();
+//
+//    private LocalDateTime updatedAt;
+//
+//
 }

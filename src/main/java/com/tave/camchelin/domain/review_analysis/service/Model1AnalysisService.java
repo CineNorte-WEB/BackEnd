@@ -39,8 +39,8 @@ public class Model1AnalysisService {
         // 결과를 저장
         Model1Results model1Result = Model1Results.builder()
                 .storeName(requestDto.storeName())
-                .positiveKeywords(List.of(responseDto.positiveKeywords().split(", ")))
-                .negativeKeywords(List.of(responseDto.negativeKeywords().split(", ")))
+                .positiveKeywords(responseDto.positiveKeywords())  // ✅ List<String> 바로 사용
+                .negativeKeywords(responseDto.negativeKeywords())  // ✅ List<String> 바로 사용
                 .build();
 
         return repository.save(model1Result);
