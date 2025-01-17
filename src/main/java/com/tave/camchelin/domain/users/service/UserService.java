@@ -7,6 +7,8 @@ import com.tave.camchelin.domain.bookmarks.repository.BookmarkRepository;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.repository.PlaceRepository;
+import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
+import com.tave.camchelin.domain.review_analysis.repository.Model1ResultsRepository;
 import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
@@ -44,6 +46,7 @@ public class UserService {
     private final BookmarkRepository bookmarkRepository;
     private final BoardPostRepository boardPostRepository;
     private final ReviewPostRepository reviewPostRepository;
+    private final Model1ResultsRepository model1ResultsRepository; // ✅ Model1Results 추가
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -127,7 +130,11 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾지 못했습니다."));
         return bookmarkRepository.findByUserId(userId)
                 .stream()
-                .map(bookmark -> PlaceDto.fromEntity(bookmark.getPlace()))
+                .map(bookmark -> {
+                    Place place = bookmark.getPlace();
+                    Model1Results model1Results = model1ResultsRepository.findByStoreName(place.getName()).orElse(null);
+                    return PlaceDto.fromEntity(place, model1Results);
+                })
                 .collect(Collectors.toList());
     }
 
