@@ -40,7 +40,9 @@ public class CallApiService {
 
     public Model2ResponseDto callModel2Api(Model2RequestDto requestDto) {
         try {
-            return webClient.post()
+            System.out.println("🔍 Sending request to Model2 API: " + requestDto);
+
+            Model2ResponseDto response = webClient.post()
                     .uri(MODEL2_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .acceptCharset(StandardCharsets.UTF_8) // UTF-8 강제 설정
@@ -48,7 +50,15 @@ public class CallApiService {
                     .retrieve()
                     .bodyToMono(Model2ResponseDto.class)
                     .block();
+
+            if (response == null) {
+                System.err.println("🚨 Model2 API returned null response");
+            }
+
+            return response;
         } catch (Exception e) {
+            System.err.println("🚨 Model2 API 호출 실패: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Failed to call Model2 API: " + e.getMessage(), e);
         }
     }

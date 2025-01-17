@@ -48,7 +48,7 @@ public class UnivService {
 
         return univ.getPlaces().stream()
                 .map(place -> {
-                    Model1Results model1Results = model1ResultsRepository.findByStoreName(place.getName()).orElse(null);
+                    Model1Results model1Results = model1ResultsRepository.findFirstByStoreNameOrderByIdDesc(place.getName()).orElse(null);
                     return PlaceDto.fromEntity(place, model1Results);
                 })
                 .collect(Collectors.toList());

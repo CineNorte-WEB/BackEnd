@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface Model1ResultsRepository extends JpaRepository<Model1Results, Long> {
 
     // storeName을 기준으로 Model1Results 조회
-    Optional<Model1Results> findByStoreName(String storeName);
+    Optional<Model1Results> findFirstByStoreNameOrderByIdDesc(String storeName);
 }

@@ -4,7 +4,6 @@ import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
 import com.tave.camchelin.domain.review_analysis.repository.Model1ResultsRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,7 +40,7 @@ public class UnivDto {
                 .places(univ.getPlaces() != null ?
                         univ.getPlaces().stream()
                                 .map(place -> {
-                                    Model1Results results = model1ResultsRepository.findByStoreName(place.getName())
+                                    Model1Results results = model1ResultsRepository.findFirstByStoreNameOrderByIdDesc(place.getName())
                                             .orElse(null);
                                     return PlaceDto.fromEntity(place, results);
                                 })

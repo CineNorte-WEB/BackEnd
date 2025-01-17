@@ -1,8 +1,5 @@
 package com.tave.camchelin.domain.review_analysis.service;
 
-import com.tave.camchelin.domain.places.entity.Place;
-import com.tave.camchelin.domain.review_analysis.dto.Model2RequestDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model2ResponseDto;
 import com.tave.camchelin.domain.review_analysis.dto.Model1RequestDto;
 import com.tave.camchelin.domain.review_analysis.dto.Model1ResponseDto;
 import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
@@ -10,8 +7,6 @@ import com.tave.camchelin.domain.review_analysis.repository.Model1ResultsReposit
 import com.tave.camchelin.global.callapi.CallApiService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -47,7 +42,7 @@ public class Model1AnalysisService {
     }
 
     public Model1Results findByStoreName(String storeName) {
-        Optional<Model1Results> result = repository.findByStoreName(storeName);
+        Optional<Model1Results> result = repository.findFirstByStoreNameOrderByIdDesc(storeName);
         System.out.println("result = " + result);
         return result.orElse(null); // 결과 없으면 null 반환
     }

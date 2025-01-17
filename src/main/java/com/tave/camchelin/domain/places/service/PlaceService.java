@@ -1,6 +1,5 @@
 package com.tave.camchelin.domain.places.service;
 
-import com.tave.camchelin.domain.menus.dto.MenuDto;
 import com.tave.camchelin.domain.menus.repository.MenuRepository;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
@@ -12,9 +11,6 @@ import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +26,7 @@ public class PlaceService {
                 .orElseThrow(() -> new IllegalArgumentException("맛집 정보를 찾지 못했습니다."));
 
         // ✅ Model1 키워드 조회
-        Model1Results model1Results = model1ResultsRepository.findByStoreName(place.getName()).orElse(null);
+        Model1Results model1Results = model1ResultsRepository.findFirstByStoreNameOrderByIdDesc(place.getName()).orElse(null);
 
         // PlaceDto로 반환, 메뉴도 포함됨
         return PlaceDto.fromEntity(place, model1Results);
@@ -44,7 +40,7 @@ public class PlaceService {
         System.out.println("=======================================================");
 
         // ✅ Model1 키워드 조회
-        Model1Results model1Results = model1ResultsRepository.findByStoreName(placeName).orElse(null);
+        Model1Results model1Results = model1ResultsRepository.findFirstByStoreNameOrderByIdDesc(placeName).orElse(null);
 
         // PlaceDto로 반환, 메뉴도 포함됨
         return PlaceDto.fromEntity(place, model1Results);

@@ -132,7 +132,7 @@ public class UserService {
                 .stream()
                 .map(bookmark -> {
                     Place place = bookmark.getPlace();
-                    Model1Results model1Results = model1ResultsRepository.findByStoreName(place.getName()).orElse(null);
+                    Model1Results model1Results = model1ResultsRepository.findFirstByStoreNameOrderByIdDesc(place.getName()).orElse(null);
                     return PlaceDto.fromEntity(place, model1Results);
                 })
                 .collect(Collectors.toList());
