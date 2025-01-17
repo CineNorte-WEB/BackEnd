@@ -9,12 +9,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.nio.charset.StandardCharsets;
+
 @Service
 @Transactional
 public class CallApiService {
 
     private final WebClient webClient;
-    private static final String MODEL1_URL = "http://127.0.0.1:8001/analyze";
+    private static final String MODEL1_URL = "http://127.0.0.1:8001/generate";
     private static final String MODEL2_URL = "http://127.0.0.1:8000/analyze";
 
     public CallApiService(WebClient.Builder webClientBuilder) {
@@ -26,6 +28,7 @@ public class CallApiService {
             return webClient.post()
                     .uri(MODEL1_URL)
                     .contentType(MediaType.APPLICATION_JSON)
+                    .acceptCharset(StandardCharsets.UTF_8) // UTF-8 강제 설정
                     .bodyValue(requestDto)
                     .retrieve()
                     .bodyToMono(Model1ResponseDto.class)
@@ -40,6 +43,7 @@ public class CallApiService {
             return webClient.post()
                     .uri(MODEL2_URL)
                     .contentType(MediaType.APPLICATION_JSON)
+                    .acceptCharset(StandardCharsets.UTF_8) // UTF-8 강제 설정
                     .bodyValue(requestDto)
                     .retrieve()
                     .bodyToMono(Model2ResponseDto.class)

@@ -30,7 +30,7 @@ public class ReviewAnalysisController {
     public ResponseEntity<?> analyzeAndSave(@RequestBody Model1RequestDto requestDto) {
         try {
             // Place 조회
-            PlaceDto placeDto = placeService.getPlaceByName(requestDto.storename());
+            PlaceDto placeDto = placeService.getPlaceByName(requestDto.storeName());
             Place place = placeDto.toEntity(placeService.getUnivEntityByName(placeDto.getUnivName()));
 
             // 모델 분석 및 결과 저장

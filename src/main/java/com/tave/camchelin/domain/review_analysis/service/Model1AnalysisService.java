@@ -25,15 +25,22 @@ public class Model1AnalysisService {
         this.repository = repository;
     }
 
-    public Model1Results analyzeAndSave(Model1RequestDto requestDto, Place place) {
+    public Model1Results analyzeAndSave(Model1RequestDto requestDto) {
         // 모델1 API 호출
+        System.out.println("📌 모델1 API 호출 시작");
         Model1ResponseDto responseDto = callApiService.callModel1Api(requestDto);
+
+        if (responseDto == null) {
+            throw new RuntimeException("❌ Model1 API가 null을 반환했습니다.");
+        }
+
+        System.out.println("✅ 모델1 API 응답 수신: " + responseDto);
 
         // 결과를 저장
         Model1Results model1Result = Model1Results.builder()
-                .storeName(requestDto.storename())
-                .positiveKeywords(List.of(responseDto.Positive_Keywords().split(", ")))
-                .negativeKeywords(List.of(responseDto.Negative_Keywords().split(", ")))
+                .storeName(requestDto.storeName())
+                .positiveKeywords(List.of(responseDto.positiveKeywords().split(", ")))
+                .negativeKeywords(List.of(responseDto.negativeKeywords().split(", ")))
                 .build();
 
         return repository.save(model1Result);
@@ -41,6 +48,7 @@ public class Model1AnalysisService {
 
     public Model1Results findByStoreName(String storeName) {
         Optional<Model1Results> result = repository.findByStoreName(storeName);
+        System.out.println("result = " + result);
         return result.orElse(null); // 결과 없으면 null 반환
     }
 }

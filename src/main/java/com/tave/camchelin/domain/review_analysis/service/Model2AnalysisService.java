@@ -23,12 +23,14 @@ public class Model2AnalysisService {
         this.callApiService = callApiService;
     }
 
-    public List<Model2Results> analyzeAndSave(Model2RequestDto requestDto, Place place, Model1Results model1Result) {
+    public List<Model2Results> analyzeAndSave(Model2RequestDto requestDto, Model1Results model1Result) {
+        System.out.println("111111111111111111111111111111111111111111111111111111111111111111111111111");
         // 모델 API 호출
         Model2ResponseDto responseDto = callApiService.callModel2Api(requestDto);
         if (responseDto == null || responseDto.results() == null) {
             throw new RuntimeException("Model2 API response is null or empty");
         }
+        System.out.println("=====================================================================================");
 
         // 결과를 DB에 저장
         List<Model2Results> savedReviews = new ArrayList<>();

@@ -21,18 +21,26 @@ public class Model1Controller {
         this.placeService = placeService;
     }
 
-    @PostMapping("/analyze")
+    @PostMapping("/generate")
     public ResponseEntity<?> analyzeReview(@RequestBody Model1RequestDto requestDto) {
         try {
-            // Place 조회
-            PlaceDto placeDto = placeService.getPlaceByName(requestDto.storename());
+            System.out.println("📌 모델1 분석 요청 도착: " + requestDto.storeName());
+
+            // ✅ 가게 정보 조회 (DB에 존재하는지 확인)
+            PlaceDto placeDto = placeService.getPlaceByName(requestDto.storeName());
+            if (placeDto == null) {
+                System.out.println("❌ 해당 스토어 정보 없음: " + requestDto.storeName());
+                return ResponseEntity.badRequest().body("❌ 해당 스토어 정보가 없습니다.");
+            }
+
             Place place = placeDto.toEntity(placeService.getUnivEntityByName(placeDto.getUnivName()));
 
-            // 모델1 호출 및 결과 저장
-            Model1Results result = model1Service.analyzeAndSave(requestDto, place);
-
+            // ✅ 모델1 호출 및 결과 저장
+            Model1Results result = model1Service.analyzeAndSave(requestDto);
             return ResponseEntity.ok(result);
+
         } catch (Exception e) {
+            System.err.println("❌ 예외 발생: " + e.getMessage());
             return ResponseEntity.internalServerError().body("Error occurred: " + e.getMessage());
         }
     }

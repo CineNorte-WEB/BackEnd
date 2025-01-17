@@ -32,8 +32,10 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public PlaceDto getPlaceByName(String placeName) {
+        System.out.println("placeName = " + placeName);
         Place place = placeRepository.findByName(placeName)
                 .orElseThrow(() -> new IllegalArgumentException("맛집 정보를 찾지 못했습니다."));
+        System.out.println("=======================================================");
 
         // PlaceDto로 반환, 메뉴도 포함됨
         return PlaceDto.fromEntity(place);

@@ -48,7 +48,7 @@ public class Place {
     @Column
     private String likePoints;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url",columnDefinition = "TEXT")
     private String imageUrl;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)

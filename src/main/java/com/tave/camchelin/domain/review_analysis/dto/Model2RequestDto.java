@@ -1,9 +1,11 @@
 package com.tave.camchelin.domain.review_analysis.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public record Model2RequestDto(
-        String storename,
-        List<String> keywords
+        @JsonProperty("store_name")String storename,
+        @JsonProperty("keywords")List<String> keywords
 ){
 }

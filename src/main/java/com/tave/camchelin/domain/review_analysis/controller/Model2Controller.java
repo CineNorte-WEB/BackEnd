@@ -30,13 +30,13 @@ public class Model2Controller {
         this.placeService = placeService;
     }
 
-    @PostMapping("/analyze-and-save")
+    @PostMapping("/analyze")
     public ResponseEntity<?> analyzeAndSave(@RequestBody Model2RequestDto requestDto) {
         try {
             // Place 조회
-            PlaceDto placeDto = placeService.getPlaceByName(requestDto.storename());
-            Place place = placeDto.toEntity(placeService.getUnivEntityByName(placeDto.getUnivName()));
-
+//            PlaceDto placeDto = placeService.getPlaceByName(requestDto.storename());
+//            Place place = placeDto.toEntity(placeService.getUnivEntityByName(placeDto.getUnivName()));
+            System.out.println("requestDto = " + requestDto.storename());
             // 모델1 결과 조회
             Model1Results model1Result = model1AnalysisService.findByStoreName(requestDto.storename());
             if (model1Result == null) {
@@ -44,7 +44,7 @@ public class Model2Controller {
             }
 
             // 모델 호출 및 결과 저장
-            List<Model2Results> savedReviews = model2AnalysisService.analyzeAndSave(requestDto, place, model1Result);
+            List<Model2Results> savedReviews = model2AnalysisService.analyzeAndSave(requestDto, model1Result);
 
             return ResponseEntity.ok(savedReviews);
 
