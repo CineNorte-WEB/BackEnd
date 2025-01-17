@@ -1,8 +1,6 @@
 package com.tave.camchelin.domain.univs.dto;
 
 import com.tave.camchelin.domain.places.dto.PlaceDto;
-import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
-import com.tave.camchelin.domain.review_analysis.repository.Model1ResultsRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,21 +29,16 @@ public class UnivDto {
                 .build();
     }
 
-    public static UnivDto fromEntity(Univ univ, Model1ResultsRepository model1ResultsRepository) {
+    public static UnivDto fromEntity(Univ univ) {
         return UnivDto.builder()
                 .id(univ.getId())
                 .name(univ.getName())
                 .imageUrl(univ.getImageUrl())
                 .address(univ.getAddress())
-                .places(univ.getPlaces() != null ?
-                        univ.getPlaces().stream()
-                                .map(place -> {
-                                    Model1Results results = model1ResultsRepository.findFirstByStoreNameOrderByIdDesc(place.getName())
-                                            .orElse(null);
-                                    return PlaceDto.fromEntity(place, results);
-                                })
-                                .collect(Collectors.toList())
-                        : null)
+                .places(univ.getPlaces().stream()
+                        .map(PlaceDto::fromEntity)
+                        .peek(placeDto -> placeDto.setMenus(placeDto.getMenus())) // menus 필드 설정
+                        .collect(Collectors.toList()))
                 .build();
     }
 

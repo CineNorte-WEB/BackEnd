@@ -2,7 +2,6 @@ package com.tave.camchelin.domain.places.dto;
 
 import com.tave.camchelin.domain.menus.dto.MenuDto;
 import com.tave.camchelin.domain.places.entity.Place;
-import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,10 +29,6 @@ public class PlaceDto {
     private String univName;
     private List<MenuDto> menus;
 
-    // Model1 분석 결과 (키워드)
-    private List<String> positiveKeywords;
-    private List<String> negativeKeywords;
-
     // PlaceDto -> Place 엔티티로 변환
     public Place toEntity(Univ univ) {
         return Place.builder()
@@ -51,7 +46,7 @@ public class PlaceDto {
 
 
     // Place 엔티티 -> PlaceDto로 변환
-    public static PlaceDto fromEntity(Place place, Model1Results model1Results) {
+    public static PlaceDto fromEntity(Place place) {
         return PlaceDto.builder()
                 .id(place.getId())
                 .name(place.getName())
@@ -66,8 +61,6 @@ public class PlaceDto {
                 .menus(place.getMenus().stream()
                         .map(MenuDto::fromEntity)
                         .collect(Collectors.toList()))
-                .positiveKeywords(model1Results != null ? model1Results.getPositiveKeywords() : List.of())
-                .negativeKeywords(model1Results != null ? model1Results.getNegativeKeywords() : List.of())
                 .build();
     }
 

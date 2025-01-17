@@ -1,7 +1,6 @@
 package com.tave.camchelin.domain.univs.service;
 
 import com.tave.camchelin.domain.places.dto.PlaceDto;
-import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
 import com.tave.camchelin.domain.review_analysis.repository.Model1ResultsRepository;
 import com.tave.camchelin.domain.univs.dto.UnivDto;
 import com.tave.camchelin.domain.univs.entity.Univ;
@@ -25,20 +24,20 @@ public class UnivService {
         Univ univ = univRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾지 못했습니다."));
 
-        return UnivDto.fromEntity(univ, model1ResultsRepository);
+        return UnivDto.fromEntity(univ);
     }
 
     public UnivDto getUnivByName(String name) {
         Univ univ = univRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾지 못했습니다."));
 
-        return UnivDto.fromEntity(univ, model1ResultsRepository);
+        return UnivDto.fromEntity(univ);
     }
 
     public List<UnivDto> getAllUnivs() {
         List<Univ> univs = univRepository.findAll();
         return univs.stream()
-                .map(univ -> UnivDto.fromEntity(univ, model1ResultsRepository)) // ✅ Model1ResultsRepository 추가
+                .map(UnivDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -47,10 +46,7 @@ public class UnivService {
                 .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾지 못했습니다."));
 
         return univ.getPlaces().stream()
-                .map(place -> {
-                    Model1Results model1Results = model1ResultsRepository.findFirstByStoreNameOrderByIdDesc(place.getName()).orElse(null);
-                    return PlaceDto.fromEntity(place, model1Results);
-                })
+                .map(PlaceDto::fromEntity)
                 .collect(Collectors.toList());
     }
 }
