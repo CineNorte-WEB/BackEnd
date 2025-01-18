@@ -59,7 +59,7 @@ public class ReviewProcessService {
         List<Model2Results> savedModel2Results = new ArrayList<>();
         for (Model2ResponseDto.CategoryResult result : model2Response.results()) {
             Model2Results model2Result = Model2Results.builder()
-                    .model1Result(savedModel1Result)
+            //        .model1Result(savedModel1Result)
                     .storeName(requestDto.storeName())
                     .category(result.category())
                     .groupKeywords(List.of(result.groupKeywords().split(", ")))

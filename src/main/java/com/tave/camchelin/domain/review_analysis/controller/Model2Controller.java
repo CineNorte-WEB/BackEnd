@@ -44,9 +44,10 @@ public class Model2Controller {
             }
 
             // 모델 호출 및 결과 저장
-            List<Model2Results> savedReviews = model2AnalysisService.analyzeAndSave(requestDto, model1Result);
+            model2AnalysisService.analyzeAndSave(requestDto, "Positive");
 
-            return ResponseEntity.ok(savedReviews);
+            // 성공 응답 반환
+            return ResponseEntity.ok("모델2 호출 성공");
 
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error occurred: " + e.getMessage());

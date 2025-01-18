@@ -7,43 +7,44 @@ import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
 import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
 import com.tave.camchelin.domain.review_analysis.repository.Model2ResultsRepository;
 import com.tave.camchelin.global.callapi.CallApiService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class Model2AnalysisService {
 
-    private final Model2ResultsRepository repository;
+    private final Model2ResultsRepository model2ResultsRepository;
     private final CallApiService callApiService;
 
-    public Model2AnalysisService(Model2ResultsRepository repository, CallApiService callApiService) {
-        this.repository = repository;
-        this.callApiService = callApiService;
-    }
 
-    public List<Model2Results> analyzeAndSave(Model2RequestDto requestDto, Model1Results model1Result) {
-        System.out.println("111111111111111111111111111111111111111111111111111111111111111111111111111");
-        // 모델 API 호출
+    @Transactional
+    public void analyzeAndSave(Model2RequestDto requestDto, String sentiment) {
+        // 모델2 API 호출
         Model2ResponseDto responseDto = callApiService.callModel2Api(requestDto);
         if (responseDto == null || responseDto.results() == null) {
             throw new RuntimeException("Model2 API response is null or empty");
         }
-        System.out.println("=====================================================================================");
 
-        // 결과를 DB에 저장
-        List<Model2Results> savedReviews = new ArrayList<>();
+        // 결과를 DB에 저장 (기존 엔티티 업데이트)
         for (Model2ResponseDto.CategoryResult result : responseDto.results()) {
-            Model2Results reviewAnalysis = Model2Results.builder()
-                    .model1Result(model1Result)
-                    .storeName(requestDto.storename())
-                    .category(result.category())
-                    .groupKeywords(List.of(result.groupKeywords().split(", ")))
-                    .representativeSentence(result.representativeSentence())
-                    .build();
-            savedReviews.add(repository.save(reviewAnalysis));
+            // sentiment, storename, category가 모두 일치하는 기존 데이터 검색
+            Model2Results model2Result = model2ResultsRepository.findByStoreNameAndCategoryAndSentiment(
+                    requestDto.storename(), result.category(), sentiment);
+            System.out.println(model2Result);
+            if (model2Result == null) {
+                throw new IllegalStateException("해당 엔티티를 찾을 수 없습니다. storeName: "
+                        + requestDto.storename() + ", category: " + result.category() + ", sentiment: " + sentiment);
+            }
+
+            // 기존 데이터 업데이트
+            model2Result.getGroupKeywords().addAll(List.of(result.groupKeywords().split(", ")));
+            model2Result.setRepresentativeSentence(result.representativeSentence());
+            model2ResultsRepository.save(model2Result);
         }
-        return savedReviews;
     }
 }

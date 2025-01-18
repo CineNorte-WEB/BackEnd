@@ -21,12 +21,11 @@ public class Model2Results extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "model1_result_id", nullable = false)
-    private Model1Results model1Result;
-
     @Column(nullable = false)
     private String storeName;
+
+    @Column(nullable = false)
+    private String sentiment;
 
     @Column(nullable = false)
     private String category;

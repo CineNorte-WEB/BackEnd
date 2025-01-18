@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface Model2ResultsRepository extends JpaRepository<Model2Results, Long> {
+    Model2Results findByStoreNameAndCategoryAndSentiment(String storename, String category, String sentiment);
 }
