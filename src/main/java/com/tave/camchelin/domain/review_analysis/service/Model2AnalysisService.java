@@ -35,14 +35,15 @@ public class Model2AnalysisService {
             // sentiment, storename, category가 모두 일치하는 기존 데이터 검색
             Model2Results model2Result = model2ResultsRepository.findByStoreNameAndCategoryAndSentiment(
                     requestDto.storename(), result.category(), sentiment);
-            System.out.println(model2Result);
             if (model2Result == null) {
                 throw new IllegalStateException("해당 엔티티를 찾을 수 없습니다. storeName: "
                         + requestDto.storename() + ", category: " + result.category() + ", sentiment: " + sentiment);
             }
 
             // 기존 데이터 업데이트
-            model2Result.getGroupKeywords().addAll(List.of(result.groupKeywords().split(", ")));
+            if (result.groupKeywords() != null && !result.groupKeywords().trim().isEmpty()) {
+                model2Result.getGroupKeywords().addAll(List.of(result.groupKeywords().split(", ")));
+            }
             model2Result.setRepresentativeSentence(result.representativeSentence());
             model2ResultsRepository.save(model2Result);
         }
