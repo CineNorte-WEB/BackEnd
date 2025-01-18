@@ -10,16 +10,16 @@ import com.tave.camchelin.domain.users.dto.request.UpdateRequestUserDto;
 import com.tave.camchelin.domain.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/users")
@@ -159,6 +159,26 @@ public class UserController {
         Page<ResponseReviewDto> reviewPosts = userService.getUserReviewPosts(userId, pageable);
         return ResponseEntity.ok(reviewPosts);
     }
+
+    @GetMapping("/posts")
+    public ResponseEntity<Page<Object>> getUserPostsAndReviews(
+            @RequestHeader("Authorization") String token,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Long userId = userService.extractUserIdFromToken(token);
+
+        if (userId == null) {
+            log.error("유효하지 않은 토큰입니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Object> combinedPosts = userService.getUserPostsAndReviews(userId, pageable);
+
+        return ResponseEntity.ok(combinedPosts);
+    }
+
 
 
     @PostMapping("/findpw")

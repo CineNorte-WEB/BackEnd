@@ -25,6 +25,7 @@ import com.tave.camchelin.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.mail.MailSender;
@@ -34,9 +35,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -215,6 +218,42 @@ public class UserService {
                 .map(User::getId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. 이메일: " + email));
     }
+
+    @Transactional(readOnly = true)
+    public Page<Object> getUserPostsAndReviews(Long userId, Pageable pageable) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾지 못했습니다."));
+
+        // 게시글 및 리뷰 데이터 조회
+        List<ResponseBoardDto> boardPosts = boardPostRepository.findByUserId(userId, Pageable.unpaged())
+                .map(ResponseBoardDto::fromEntity)
+                .getContent();
+
+        List<ResponseReviewDto> reviewPosts = reviewPostRepository.findByUserId(userId, Pageable.unpaged())
+                .map(ResponseReviewDto::fromEntity)
+                .getContent();
+
+        // 병합 및 정렬
+        List<Object> combinedPosts = Stream.concat(boardPosts.stream(), reviewPosts.stream())
+                .sorted(Comparator.comparing((Object obj) -> {
+                    if (obj instanceof ResponseBoardDto) {
+                        return ((ResponseBoardDto) obj).getCreatedAt();
+                    } else if (obj instanceof ResponseReviewDto) {
+                        return ((ResponseReviewDto) obj).getCreatedAt();
+                    }
+                    return null;
+                }).reversed()) // 최신순 정렬
+                .collect(Collectors.toList());
+
+        // 페이징 처리
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), combinedPosts.size());
+        List<Object> pagedPosts = combinedPosts.subList(start, end);
+
+        // Page 객체 생성
+        return new PageImpl<>(pagedPosts, pageable, combinedPosts.size());
+    }
+
 
 
     @Transactional
