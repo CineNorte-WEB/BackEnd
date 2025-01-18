@@ -1,6 +1,7 @@
 package com.tave.camchelin.domain.univs.dto;
 
 import com.tave.camchelin.domain.places.dto.PlaceDto;
+import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
@@ -19,7 +21,6 @@ public class UnivDto {
     private String name;
     private String imageUrl;
     private String address;
-    private List<PlaceDto> places;
 
     public Univ toEntity() {
         return Univ.builder()
@@ -35,11 +36,6 @@ public class UnivDto {
                 .name(univ.getName())
                 .imageUrl(univ.getImageUrl())
                 .address(univ.getAddress())
-                .places(univ.getPlaces().stream()
-                        .map(PlaceDto::fromEntity)
-                        .peek(placeDto -> placeDto.setMenus(placeDto.getMenus())) // menus 필드 설정
-                        .collect(Collectors.toList()))
                 .build();
     }
-
 }

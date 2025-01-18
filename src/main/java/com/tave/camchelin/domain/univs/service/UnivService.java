@@ -1,15 +1,20 @@
 package com.tave.camchelin.domain.univs.service;
 
 import com.tave.camchelin.domain.places.dto.PlaceDto;
+import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
 import com.tave.camchelin.domain.review_analysis.repository.Model1ResultsRepository;
+import com.tave.camchelin.domain.review_analysis.repository.Model2ResultsRepository;
+import com.tave.camchelin.domain.review_analysis.service.Model2AnalysisService;
 import com.tave.camchelin.domain.univs.dto.UnivDto;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,8 +22,8 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class UnivService {
     private final UnivRepository univRepository;
-    private final Model1ResultsRepository model1ResultsRepository; // ✅ Model1Results 추가
-
+    private final Model2ResultsRepository model2ResultsRepository;
+    private final Model2AnalysisService model2AnalysisService;
 
     public UnivDto getUnivById(Long id) {
         Univ univ = univRepository.findById(id)
@@ -46,7 +51,14 @@ public class UnivService {
                 .orElseThrow(() -> new IllegalArgumentException("대학 정보를 찾지 못했습니다."));
 
         return univ.getPlaces().stream()
-                .map(PlaceDto::fromEntity)
+                .map(place -> {
+                    // Model2Results 데이터 처리
+                    List<Model2Results> model2ResultsList = model2ResultsRepository.findByStoreName(place.getName());
+                    Pair<Model2Results, Map<String, List<String>>> results = model2AnalysisService.processModel2Results(model2ResultsList);
+
+                    // PlaceDto 생성
+                    return PlaceDto.fromEntity(place, results.getFirst(), results.getSecond());
+                })
                 .collect(Collectors.toList());
     }
 }

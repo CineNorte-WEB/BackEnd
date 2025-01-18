@@ -36,9 +36,4 @@ public class Model2Results extends BaseEntity {
 
     @Column(name = "representative_sentence", columnDefinition = "TEXT")
     private String representativeSentence;
-
-//    @Column(nullable = false, updatable = false)
-//    private LocalDateTime createdAt = LocalDateTime.now();
-//
-//    private LocalDateTime updatedAt;
 }

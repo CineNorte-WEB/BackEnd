@@ -8,11 +8,15 @@ import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
 import com.tave.camchelin.domain.review_analysis.repository.Model2ResultsRepository;
 import com.tave.camchelin.global.callapi.CallApiService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,5 +51,34 @@ public class Model2AnalysisService {
             model2Result.setRepresentativeSentence(result.representativeSentence());
             model2ResultsRepository.save(model2Result);
         }
+    }
+
+
+    public Pair<Model2Results, Map<String, List<String>>> processModel2Results(List<Model2Results> model2ResultsList) {
+        // 긍정 및 부정 문장 분리
+        List<String> positiveSentences = model2ResultsList.stream()
+                .filter(result -> "Positive".equals(result.getSentiment()))
+                .map(Model2Results::getRepresentativeSentence)
+                .filter(sentence -> sentence != null && !sentence.isEmpty())
+                .collect(Collectors.toList());
+
+        List<String> negativeSentences = model2ResultsList.stream()
+                .filter(result -> "Negative".equals(result.getSentiment()))
+                .map(Model2Results::getRepresentativeSentence)
+                .filter(sentence -> sentence != null && !sentence.isEmpty())
+                .collect(Collectors.toList());
+
+        // Map 생성
+        Map<String, List<String>> allSentencesBySentiment = Map.of(
+                "Positive", positiveSentences,
+                "Negative", negativeSentences
+        );
+
+        // 가장 긴 groupKeywords를 가진 Model2Results 선택
+        Model2Results topResult = model2ResultsList.stream()
+                .max(Comparator.comparingInt(m -> m.getGroupKeywords().size()))
+                .orElse(null);
+
+        return Pair.of(topResult, allSentencesBySentiment);
     }
 }

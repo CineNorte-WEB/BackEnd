@@ -7,6 +7,9 @@ import com.tave.camchelin.domain.bookmarks.repository.BookmarkRepository;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.repository.PlaceRepository;
+import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
+import com.tave.camchelin.domain.review_analysis.repository.Model2ResultsRepository;
+import com.tave.camchelin.domain.review_analysis.service.Model2AnalysisService;
 import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
@@ -23,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Pair;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -44,6 +49,9 @@ public class UserService {
     private final BookmarkRepository bookmarkRepository;
     private final BoardPostRepository boardPostRepository;
     private final ReviewPostRepository reviewPostRepository;
+    private final Model2ResultsRepository model2ResultsRepository;
+
+    private final Model2AnalysisService model2AnalysisService;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -127,8 +135,16 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾지 못했습니다."));
         return bookmarkRepository.findByUserId(userId)
                 .stream()
-                .map(bookmark -> PlaceDto.fromEntity(bookmark.getPlace()))
-                .collect(Collectors.toList());
+                .map(bookmark -> {
+                    Place place = bookmark.getPlace();
+
+                    // Model2Results 데이터 처리
+                    List<Model2Results> model2ResultsList = model2ResultsRepository.findByStoreName(place.getName());
+                    Pair<Model2Results, Map<String, List<String>>> results = model2AnalysisService.processModel2Results(model2ResultsList);
+
+                    // PlaceDto 생성
+                    return PlaceDto.fromEntity(place, results.getFirst(), results.getSecond());
+                }).collect(Collectors.toList());
     }
 
     @Transactional
