@@ -38,6 +38,15 @@ jobs:
           docker buildx create --use
           docker buildx build --platform linux/amd64 -t tjdgus3488/camchelin:latest . --push
 
+      - name: Set permissions for SSH key
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/camchelin_ec2.pem
+          chmod 400 ~/.ssh/camchelin_ec2.pem
+
+      - name: SSH Debugging
+        run: ssh -vvv -i ~/.ssh/camchelin_ec2.pem ubuntu@${{ secrets.EC2_HOST }}
+
+
       # 6. EC2에 SSH로 접속 및 컨테이너 실행
       - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@master
