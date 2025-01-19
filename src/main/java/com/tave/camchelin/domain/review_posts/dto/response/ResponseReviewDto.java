@@ -23,6 +23,7 @@ public class ResponseReviewDto {
     private String userNickname; // 작성자 닉네임
     private Long placeId; // 장소 ID
     private String placeName; // 장소 이름
+    private String type;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt; // 생성 시간
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -40,6 +41,7 @@ public class ResponseReviewDto {
                 .userNickname(user != null ? user.getNickname() : null)
                 .placeId(place != null ? place.getId() : null)
                 .placeName(place != null ? place.getName() : null)
+                .type("review")
                 .createdAt(reviewPost.getCreatedAt())
                 .updatedAt(reviewPost.getUpdatedAt())
                 .build();

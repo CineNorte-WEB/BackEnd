@@ -21,6 +21,7 @@ public class ResponseBoardDto {
     private String title;
     private String content;
     private String userNickname;
+    private String type;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt; // 생성 시간
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -34,6 +35,7 @@ public class ResponseBoardDto {
                 .title(boardPost.getTitle())
                 .content(boardPost.getContent())
                 .userNickname(user != null ? user.getNickname() : null)
+                .type("board")
                 .createdAt(boardPost.getCreatedAt())
                 .updatedAt(boardPost.getUpdatedAt())
                 .build();
