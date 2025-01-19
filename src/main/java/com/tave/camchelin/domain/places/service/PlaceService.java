@@ -35,7 +35,7 @@ public class PlaceService {
 
         List<Model2Results> model2ResultsList = model2ResultsRepository.findByStoreName(place.getName());
 
-        Pair<Model2Results, Map<String, List<String>>> results = model2AnalysisService.processModel2Results(model2ResultsList);
+        Pair<Model2Results, Map<String, Map<String, String>>> results = model2AnalysisService.processModel2Results(model2ResultsList);
 
 
         // PlaceDto로 반환, 메뉴도 포함됨
@@ -50,7 +50,7 @@ public class PlaceService {
 
         List<Model2Results> model2ResultsList = model2ResultsRepository.findByStoreName(place.getName());
 
-        Pair<Model2Results, Map<String, List<String>>> results = model2AnalysisService.processModel2Results(model2ResultsList);
+        Pair<Model2Results, Map<String, Map<String, String>>> results = model2AnalysisService.processModel2Results(model2ResultsList);
 
 
         // PlaceDto로 반환, 메뉴도 포함됨

@@ -50,7 +50,7 @@ public class PlaceDto {
 
 
     // Place 엔티티 -> PlaceDto로 변환
-    public static PlaceDto fromEntity(Place place, Model2Results model2Results, Map<String, List<String>> allSentences) {
+    public static PlaceDto fromEntity(Place place, Model2Results model2Results, Map<String, Map<String, String>> allSentences) {
         return PlaceDto.builder()
                 .id(place.getId())
                 .name(place.getName())
@@ -67,8 +67,8 @@ public class PlaceDto {
                         .collect(Collectors.toList()))
                 .representativeSentenceMap(Map.of(
                         "topSentence", model2Results != null ? model2Results.getRepresentativeSentence() : null,
-                        "positiveSentences", allSentences.getOrDefault("Positive", List.of()),
-                        "negativeSentences", allSentences.getOrDefault("Negative", List.of())
+                        "positiveSentences", allSentences.getOrDefault("Positive", Map.of()),
+                        "negativeSentences", allSentences.getOrDefault("Negative", Map.of())
                 ))
                 .build();
     }

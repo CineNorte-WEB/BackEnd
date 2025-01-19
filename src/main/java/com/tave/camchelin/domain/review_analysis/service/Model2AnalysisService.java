@@ -54,24 +54,28 @@ public class Model2AnalysisService {
     }
 
 
-    public Pair<Model2Results, Map<String, List<String>>> processModel2Results(List<Model2Results> model2ResultsList) {
+    public Pair<Model2Results, Map<String, Map<String, String>>> processModel2Results(List<Model2Results> model2ResultsList) {
         // 긍정 및 부정 문장 분리
-        List<String> positiveSentences = model2ResultsList.stream()
+        Map<String, String> positiveSentencesByCategory = model2ResultsList.stream()
                 .filter(result -> "Positive".equals(result.getSentiment()))
-                .map(Model2Results::getRepresentativeSentence)
-                .filter(sentence -> sentence != null && !sentence.isEmpty())
-                .collect(Collectors.toList());
+                .filter(result -> result.getRepresentativeSentence() != null && !result.getRepresentativeSentence().isEmpty())
+                .collect(Collectors.toMap(
+                        Model2Results::getCategory, // 카테고리
+                        Model2Results::getRepresentativeSentence // 대표 문장
+                ));
 
-        List<String> negativeSentences = model2ResultsList.stream()
+        Map<String, String> negativeSentencesByCategory = model2ResultsList.stream()
                 .filter(result -> "Negative".equals(result.getSentiment()))
-                .map(Model2Results::getRepresentativeSentence)
-                .filter(sentence -> sentence != null && !sentence.isEmpty())
-                .collect(Collectors.toList());
+                .filter(result -> result.getRepresentativeSentence() != null && !result.getRepresentativeSentence().isEmpty())
+                .collect(Collectors.toMap(
+                        Model2Results::getCategory, // 카테고리를 key로 설정
+                        Model2Results::getRepresentativeSentence // 대표 문장만 추출
+                ));
 
         // Map 생성
-        Map<String, List<String>> allSentencesBySentiment = Map.of(
-                "Positive", positiveSentences,
-                "Negative", negativeSentences
+        Map<String, Map<String, String>> allSentencesBySentiment = Map.of(
+                "Positive", positiveSentencesByCategory,
+                "Negative", negativeSentencesByCategory
         );
 
         // 가장 긴 groupKeywords를 가진 Model2Results 선택

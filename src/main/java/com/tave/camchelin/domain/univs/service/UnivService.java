@@ -54,7 +54,7 @@ public class UnivService {
                 .map(place -> {
                     // Model2Results 데이터 처리
                     List<Model2Results> model2ResultsList = model2ResultsRepository.findByStoreName(place.getName());
-                    Pair<Model2Results, Map<String, List<String>>> results = model2AnalysisService.processModel2Results(model2ResultsList);
+                    Pair<Model2Results, Map<String, Map<String, String>>> results = model2AnalysisService.processModel2Results(model2ResultsList);
 
                     // PlaceDto 생성
                     return PlaceDto.fromEntity(place, results.getFirst(), results.getSecond());
