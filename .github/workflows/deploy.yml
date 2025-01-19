@@ -43,13 +43,16 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/camchelin_ec2.pem
           chmod 400 ~/.ssh/camchelin_ec2.pem
-      
+
+      - name: Add Host to Known Hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: SSH Debugging
         run: |
           ls -al ~/.ssh
           ssh -vvv -i ~/.ssh/camchelin_ec2.pem ubuntu@${{ secrets.EC2_HOST }}
-
+      
 
       # 6. EC2에 SSH로 접속 및 컨테이너 실행
       - name: SSH to EC2 and deploy
