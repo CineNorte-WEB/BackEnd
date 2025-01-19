@@ -36,7 +36,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker buildx create --use
-          docker buildx build --platform linux/amd64 -t <DOCKERHUB_USERNAME>/<IMAGE_NAME>:latest . --push
+          docker buildx build --platform linux/amd64 -t tjdgus3488/camchelin:latest . --push
 
       # 6. EC2에 SSH로 접속 및 컨테이너 실행
       - name: SSH to EC2 and deploy
@@ -46,7 +46,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull <DOCKERHUB_USERNAME>/<IMAGE_NAME>:latest
-            docker stop <CONTAINER_NAME> || true
-            docker rm <CONTAINER_NAME> || true
-            docker run -d --name <CONTAINER_NAME> -p 8080:8080 <DOCKERHUB_USERNAME>/<IMAGE_NAME>:latest
+            docker pull tjdgus3488/camchelin:latest
+            docker stop camchelin|| true
+            docker rm camchelin || true
+            docker run -d --name camchelin -p 8080:8080 tjdgus3488/camchelin:latest
