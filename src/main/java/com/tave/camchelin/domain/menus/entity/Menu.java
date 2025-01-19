@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Menu extends BaseEntity {
+public class Menu{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

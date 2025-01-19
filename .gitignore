@@ -37,7 +37,7 @@ logs/
 
 # Environment files
 #application.properties
-#application.yml
+application.yml
 .env
 
 # Spring Boot specific

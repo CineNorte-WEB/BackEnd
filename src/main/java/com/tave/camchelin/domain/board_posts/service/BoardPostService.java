@@ -1,14 +1,18 @@
 package com.tave.camchelin.domain.board_posts.service;
 
 import com.tave.camchelin.domain.board_posts.dto.BoardPostDto;
+import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
+import com.tave.camchelin.domain.board_posts.dto.request.UpdateRequestBoardDto;
 import com.tave.camchelin.domain.board_posts.entity.BoardPost;
 import com.tave.camchelin.domain.board_posts.repository.BoardPostRepository;
 import com.tave.camchelin.domain.communities.entity.Community;
 import com.tave.camchelin.domain.communities.repository.CommunityRepository;
-import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
 import com.tave.camchelin.domain.users.entity.User;
 import com.tave.camchelin.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,55 +27,57 @@ public class BoardPostService {
     private final CommunityRepository communityRepository;
 
     @Transactional(readOnly = true)
-    public List<BoardPostDto> getBoardPosts() {
-        List<BoardPost> boardPosts = boardPostRepository.findAll();
-        return boardPosts.stream()
-                .map(BoardPostDto::fromEntity)
-                .collect(Collectors.toList());
+    public Page<ResponseBoardDto> getBoardPosts(Pageable pageable) {
+        // 페이징 처리된 결과 가져오기
+        return boardPostRepository.findAll(pageable)
+                .map(ResponseBoardDto::fromEntity); // Page<Entity>를 Page<DTO>로 변환
     }
+
 
     @Transactional(readOnly = true)
-    public BoardPostDto getBoardPostById(Long boardPostId) {
+    public ResponseBoardDto getBoardPostById(Long boardPostId) {
         BoardPost boardPost = boardPostRepository.findById(boardPostId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
-        return BoardPostDto.fromEntity(boardPost);
+        return ResponseBoardDto.fromEntity(boardPost);
     }
 
     @Transactional
-    public BoardPostDto writeBoardPost(BoardPostDto boardPostDto) {
-        // User와 Community를 찾아 연관 관계를 설정
-        User user = userRepository.findById(boardPostDto.getUser().getId())
+    public ResponseBoardDto writeBoardPost(Long userId, BoardPostDto boardPostDto) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저 정보를 찾을 수 없습니다."));
-        Community community = communityRepository.findByName(boardPostDto.getCommunity().getName())
+        Community community = communityRepository.findByName("boardPost")
                 .orElseThrow(() -> new IllegalArgumentException("커뮤니티 정보를 찾을 수 없습니다."));
 
-        // BoardPost Entity 생성 및 저장
-        BoardPost boardPost = BoardPost.builder()
-                .title(boardPostDto.getTitle())
-                .content(boardPostDto.getContent())
-                .user(user)
-                .community(community)
-                .build();
+        BoardPost boardPost = boardPostDto.toEntity(user, community);
 
-        boardPostRepository.save(boardPost);
-        return BoardPostDto.fromEntity(boardPost);
+        boardPost = boardPostRepository.save(boardPost);
+        return ResponseBoardDto.fromEntity(boardPost);
     }
 
     @Transactional
-    public void editBoardPost(Long boardPostId, BoardPostDto boardPostDto) {
+    public void editBoardPost(Long userId, Long boardPostId, UpdateRequestBoardDto updateRequestDto) {
         BoardPost boardPost = boardPostRepository.findById(boardPostId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
 
-        // 수정 가능한 필드만 업데이트
-        boardPost.edit(boardPostDto.getTitle(), boardPostDto.getContent());
+        if (!boardPost.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
 
-        boardPostRepository.save(boardPost);
+        boardPost.edit(
+                updateRequestDto.getTitle(),
+                updateRequestDto.getContent()
+        );
     }
 
     @Transactional
-    public void deleteBoardPost(Long boardPostId) {
+    public void deleteBoardPost(Long userId, Long boardPostId) {
         BoardPost boardPost = boardPostRepository.findById(boardPostId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        if (!boardPost.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+
         boardPostRepository.delete(boardPost);
     }
 }

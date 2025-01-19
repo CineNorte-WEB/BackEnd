@@ -23,8 +23,14 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         String email = extractEmail(authentication);
+
+        String nickname = usersRepository.findByEmail(email)
+                .map(user -> user.getNickname())
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
+
+
         String accessToken = jwtService.createAccessToken(email);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.createRefreshToken(email);
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
         usersRepository.findByEmail(email).ifPresent(
@@ -32,10 +38,23 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
         );
 
         log.info( "로그인에 성공합니다. email: {}" , email);
-        log.info( "AccessToken 을 발급합니다. AccessToken: {}" ,accessToken);
-        log.info( "RefreshToken 을 발급합니다. RefreshToken: {}" ,refreshToken);
+        log.info( "AccessToken 을 발급합니다. AccessToken: {}" , accessToken);
+        log.info( "RefreshToken 을 발급합니다. RefreshToken: {}" , refreshToken);
+        log.info( "push되는지 확인");
 
-        response.getWriter().write("success");
+        String responseJson = String.format(
+                "{" +
+                        "\"message\": \"success\"," +
+                        "\"email\": \"%s\"," +
+                        "\"nickname\": \"%s\"," +
+                        "\"accessToken\": \"%s\"," +
+                        "\"refreshToken\": \"%s\"" +
+                        "}",
+                email, nickname, accessToken, refreshToken
+        );
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(responseJson);
     }
 
     private String extractEmail(Authentication authentication) {

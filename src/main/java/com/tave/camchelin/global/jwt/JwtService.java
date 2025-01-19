@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface JwtService {
 
     String createAccessToken(String email);
-    String createRefreshToken();
+    String createRefreshToken(String email);
 
     void updateRefreshToken(String email, String refreshToken);
     void destroyRefreshToken(String email);
@@ -19,8 +19,10 @@ public interface JwtService {
     Optional<String> extractAccessToken(HttpServletRequest request);
     Optional<String> extractRefreshToken(HttpServletRequest request);
     Optional<String> extractEmail(String accessToken);
+    long getExpiration(String accessToken);
 
     void setAccessTokenHeader(HttpServletResponse response, String accessToken);
     void setRefreshTokenHeader(HttpServletResponse response, String refreshToken);
     boolean isTokenValid(String token);
+    void addTokenToBlacklist(String token);
 }

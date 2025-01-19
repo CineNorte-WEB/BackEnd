@@ -1,10 +1,12 @@
 package com.tave.camchelin.domain.review_posts.service;
 
+import com.tave.camchelin.domain.review_posts.dto.request.UpdateRequestReviewDto;
 import com.tave.camchelin.domain.communities.entity.Community;
 import com.tave.camchelin.domain.communities.repository.CommunityRepository;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.repository.PlaceRepository;
 import com.tave.camchelin.domain.review_posts.dto.ReviewPostDto;
+import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
 import com.tave.camchelin.domain.review_posts.repository.ReviewPostRepository;
 import com.tave.camchelin.domain.univs.entity.Univ;
@@ -15,6 +17,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -64,15 +70,15 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        ReviewPostDto reviewPostDto = new ReviewPostDto(null, user, community, place, univ, "Test Menu", 10000, "Test Content");
+        ReviewPostDto reviewPostDto = new ReviewPostDto(null, user, community, place, "Test Title", "Test Content");
 
         // When
-        ReviewPostDto savedReview = reviewPostService.writeReviewPost(reviewPostDto);
+        ResponseReviewDto savedReview = reviewPostService.writeReviewPost(user.getId(),reviewPostDto);
 
         // Then
         assertThat(savedReview).isNotNull();
+        assertThat(savedReview.getTitle()).isEqualTo("Test Title");
         assertThat(savedReview.getContent()).isEqualTo("Test Content");
         assertThat(reviewPostRepository.findAll().size()).isEqualTo(1);
     }
@@ -83,17 +89,20 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
-        reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu2", 20000, "Content2"));
+        reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title1", "Content1"));
+        reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title2", "Content2"));
+
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdAt")); // 페이징 처리
 
         // When
-        List<ReviewPostDto> reviewPosts = reviewPostService.getReviewPosts();
+        Page<ResponseReviewDto> reviewPosts = reviewPostService.getReviewPosts(pageable);
 
         // Then
         assertThat(reviewPosts).isNotNull();
-        assertThat(reviewPosts.size()).isEqualTo(2);
+        assertThat(reviewPosts.getContent()).hasSize(2); // 실제 데이터 검증
+        assertThat(reviewPosts.getContent().get(0).getTitle()).isEqualTo("Title1");
+        assertThat(reviewPosts.getContent().get(1).getTitle()).isEqualTo("Title2");
     }
 
     @Test
@@ -102,12 +111,11 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
+        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title1", "Content1"));
 
         // When
-        ReviewPostDto review = reviewPostService.getReviewPostById(savedReview.getId());
+        ResponseReviewDto review = reviewPostService.getReviewPostById(savedReview.getId());
 
         // Then
         assertThat(review).isNotNull();
@@ -118,25 +126,38 @@ class ReviewPostServiceTest {
     void editReviewPost_ShouldUpdateReviewDetails() {
         // Given
         User user = userRepository.findByEmail("testUser").orElseThrow();
-        Place place = placeRepository.findByName("안녕유부").orElseThrow();
+        Place oldPlace = placeRepository.findByName("안녕유부").orElseThrow();
+        Place newPlace = placeRepository.findByName("언니네함바그").orElseThrow(); // 수정할 새로운 장소
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
+        // 기존 리뷰 데이터 저장
+        ReviewPost savedReview = reviewPostRepository.save(
+                ReviewPost.builder()
+                        .user(user)
+                        .community(community)
+                        .place(oldPlace)
+                        .title("Old Title")
+                        .content("Old Content")
+                        .build()
+        );
 
-        ReviewPostDto updatedDto = ReviewPostDto.builder()
-                .menu("Updated Menu")
-                .price(15000)
-                .content("Updated Content")
+        // 수정 요청 DTO 생성
+        UpdateRequestReviewDto updatedDto = UpdateRequestReviewDto.builder()
+                .placeId(newPlace.getId()) // 수정할 장소 ID
+                .title("Updated Title") // 수정할 제목
+                .content("Updated Content") // 수정할 내용
                 .build();
 
         // When
-        reviewPostService.editReviewPost(savedReview.getId(), updatedDto);
+        reviewPostService.editReviewPost(user.getId(), savedReview.getId(), updatedDto);
 
         // Then
         ReviewPost updatedReview = reviewPostRepository.findById(savedReview.getId()).orElseThrow();
-        assertThat(updatedReview.getMenu()).isEqualTo("Updated Menu");
-        assertThat(updatedReview.getContent()).isEqualTo("Updated Content");
+
+        // Assertions
+        assertThat(updatedReview.getPlace().getId()).isEqualTo(newPlace.getId()); // 장소가 변경되었는지 확인
+        assertThat(updatedReview.getTitle()).isEqualTo("Updated Title"); // 제목이 변경되었는지 확인
+        assertThat(updatedReview.getContent()).isEqualTo("Updated Content"); // 내용이 변경되었는지 확인
     }
 
     @Test
@@ -145,12 +166,11 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
+        ReviewPost savedReview = reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title1", "Content1"));
 
         // When
-        reviewPostService.deleteReviewPost(savedReview.getId());
+        reviewPostService.deleteReviewPost(user.getId(), savedReview.getId());
 
         // Then
         assertThat(reviewPostRepository.findById(savedReview.getId())).isEmpty();
@@ -162,16 +182,19 @@ class ReviewPostServiceTest {
         User user = userRepository.findByEmail("testUser").orElseThrow();
         Place place = placeRepository.findByName("안녕유부").orElseThrow();
         Community community = communityRepository.findByName("reviewPost").orElseThrow();
-        Univ univ = univRepository.findById(3L).orElseThrow();
 
-        reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu1", 10000, "Content1"));
-        reviewPostRepository.save(new ReviewPost(null, user, community, place, univ, "Menu2", 15000, "Content2"));
+        reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title1", "Content1"));
+        reviewPostRepository.save(new ReviewPost(null, user, community, place, "Title2", "Content2"));
+
+        Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.DESC, "createdAt")); // 페이징 처리
 
         // When
-        List<ReviewPostDto> reviews = reviewPostService.getReviewsByPlace(place.getId());
+        Page<ResponseReviewDto> reviews = reviewPostService.getReviewsByPlace(place.getId(), pageable);
 
         // Then
         assertThat(reviews).isNotNull();
-        assertThat(reviews.size()).isEqualTo(2);
+        assertThat(reviews.getContent()).hasSize(2); // 실제 데이터 검증
+        assertThat(reviews.getContent().get(0).getTitle()).isEqualTo("Title1");
+        assertThat(reviews.getContent().get(1).getTitle()).isEqualTo("Title2");
     }
 }

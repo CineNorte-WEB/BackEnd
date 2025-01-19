@@ -14,27 +14,26 @@ import lombok.NoArgsConstructor;
 @Builder
 public class BoardPostDto {
     private Long id;
-    private String title;
-    private String content;
     private User user;
     private Community community;
+    private String title;
+    private String content;
 
     public BoardPost toEntity(User user, Community community) {
         return BoardPost.builder()
-                .title(this.title)
-                .content(this.content)
                 .user(user)
                 .community(community)
+                .title(this.title)
+                .content(this.content)
                 .build();
     }
 
     public static BoardPostDto fromEntity(BoardPost boardPost) {
         return BoardPostDto.builder()
                 .id(boardPost.getId())
+                .user(boardPost.getUser())
                 .title(boardPost.getTitle())
                 .content(boardPost.getContent())
-                .user(boardPost.getUser())
-                .community(boardPost.getCommunity())
                 .build();
     }
 }

@@ -21,19 +21,15 @@ public class ReviewPostDto {
     private User user;
     private Community community;
     private Place place;
-    private Univ univ;
-    private String menu;
-    private Integer price;
+    private String title;
     private String content;
 
-    public ReviewPost toEntity(User user, Community community, Place place, Univ univ) {
+    public ReviewPost toEntity(User user, Community community, Place place) {
         return ReviewPost.builder()
                 .user(user)
                 .community(community)
                 .place(place)
-                .univ(univ)
-                .menu(this.menu)
-                .price(this.price)
+                .title(this.title)
                 .content(this.content)
                 .build();
     }
@@ -42,11 +38,8 @@ public class ReviewPostDto {
         return ReviewPostDto.builder()
                 .id(reviewPost.getId())
                 .user(reviewPost.getUser())
-                .community(reviewPost.getCommunity())
                 .place(reviewPost.getPlace())
-                .univ(reviewPost.getUniv())
-                .menu(reviewPost.getMenu())
-                .price(reviewPost.getPrice())
+                .title(reviewPost.getTitle())
                 .content(reviewPost.getContent())
                 .build();
     }

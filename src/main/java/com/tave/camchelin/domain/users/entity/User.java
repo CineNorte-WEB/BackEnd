@@ -1,6 +1,5 @@
 package com.tave.camchelin.domain.users.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tave.camchelin.domain.BaseEntity;
 import com.tave.camchelin.domain.bookmarks.entity.Bookmark;
 import com.tave.camchelin.domain.review_posts.entity.ReviewPost;
@@ -9,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class User extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "univ_id", nullable = false)
+    @JoinColumn(name = "univ_id")
     private Univ univ;
 
     @Column(nullable = false, unique = true) // NOT NULL 및 UNIQUE 제약 조건
@@ -45,9 +43,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewPost> reviewPosts = new ArrayList<>();
 
-    public void update(String email, String password, String nickname, Univ univ) {
+    public void update(String email, String nickname, Univ univ) {
         this.email = email;
-        this.password = password;
         this.nickname = nickname;
         this.univ= univ;
     }
@@ -64,9 +61,10 @@ public class User extends BaseEntity {
         this.refreshToken = null;
     }
 
-    //== 패스워드 암호화 ==//
-    public void encodePassword(PasswordEncoder passwordEncoder){
-        this.password = passwordEncoder.encode(password);
+    public void updatePassword(String encodedPassword) {
+        if (encodedPassword == null || encodedPassword.isEmpty()) {
+            throw new IllegalArgumentException("비밀번호는 비어 있을 수 없습니다.");
+        }
+        this.password = encodedPassword;
     }
-
 }

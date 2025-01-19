@@ -23,7 +23,7 @@ public class Univ{
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(name = "image_url", nullable = false)
+    @Column(name = "image_url", columnDefinition = "TEXT", nullable = false)
     private String imageUrl;
 
     @Column(nullable = false)
