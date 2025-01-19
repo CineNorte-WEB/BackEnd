@@ -40,7 +40,7 @@ jobs:
 
       # 6. EC2에 SSH로 접속 및 컨테이너 실행
       - name: SSH to EC2 and deploy
-        uses: appleboy/ssh-action@v0.1.7
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
