@@ -3,54 +3,46 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - develop_action  # main 브랜치에 push할 때 트리거
+      - develop_action  # develop_action 브랜치에 push할 때 트리거
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. GitHub Repository의 코드를 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Java 17 환경 설정
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      # 3. Gradle로 JAR 파일 빌드 (테스트 제외)
       - name: Build JAR file
         run: ./gradlew clean build -x test
 
-      # 4. DockerHub에 로그인
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 5. Docker 이미지 빌드 및 푸시
       - name: Build and push Docker image
         run: |
           docker buildx create --use
           docker buildx build --platform linux/amd64 -t tjdgus3488/camchelin:latest . --push
 
-      # 6. Set permissions for SSH key
       - name: Set permissions for SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/camchelin_ec2.pem
           chmod 400 ~/.ssh/camchelin_ec2.pem
 
-      # 7. Add Host to Known Hosts
       - name: Add Host to Known Hosts
         run: |
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # 8. SSH로 EC2에 접속하여 애플리케이션 배포
       - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -58,6 +50,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e 
+
             echo "Creating application.yml..."
             mkdir -p ~/camchelin/config
             echo "${{ secrets.APPLICATION_YML }}" > ~/camchelin/config/application.yml
@@ -65,22 +59,20 @@ jobs:
             cat ~/camchelin/config/application.yml
 
             echo "Stopping and removing existing Docker container..."
-            docker stop camchelin || true
-            docker rm camchelin || true
+            docker stop camchelin || echo "No container to stop"
+            docker rm camchelin || echo "No container to remove"
 
             echo "Pulling latest Docker image..."
             docker pull tjdgus3488/camchelin:latest
 
             echo "Running new Docker container..."
             docker run -d --name camchelin -p 8080:8080 \
-            -v ~/camchelin/config/application.yml:/app/src/main/resources/application.yml \
-            -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-            tjdgus3488/camchelin:latest
-  
+              -v ~/camchelin/config/application.yml:/app/config/application.yml \
+              tjdgus3488/camchelin:latest
 
             echo "Verifying application.yml in container..."
-            docker exec camchelin ls /app/src/main/resources/application.yml || echo "application.yml not found in container"
-            docker exec camchelin cat /app/src/main/resources/application.yml || echo "Failed to read application.yml from container"
+            docker exec camchelin ls /app/config/application.yml || echo "application.yml not found in container"
+            docker exec camchelin cat /app/config/application.yml || echo "Failed to read application.yml from container"
 
             echo "Checking running container status..."
             docker ps
