@@ -44,32 +44,4 @@ public class CommentController {
         commentService.deleteComment(commentId);
         return ResponseEntity.ok().build();
     }
-//
-//    // 대댓글 작성
-//    @PostMapping("/recomment/{comment_id}")
-//    public ResponseEntity<CommentDto> writeRecomment(@PathVariable("comment_id") Long parentCommentId, @RequestBody CommentDto commentDto) {
-//        CommentDto createdRecomment = commentService.writeRecomment(parentCommentId, commentDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(createdRecomment);
-//    }
-//
-//    // 대댓글 목록 조회
-//    @GetMapping("/recomment/{comment_id}")
-//    public ResponseEntity<List<CommentDto>> getRecommentsByComment(@PathVariable("comment_id") Long commentId) {
-//        List<CommentDto> recomments = commentService.getRecommentsByComment(commentId);
-//        return ResponseEntity.ok(recomments);
-//    }
-//
-//    // 대댓글 수정
-//    @PutMapping("/recomment/{recomment_id}")
-//    public ResponseEntity<CommentDto> editRecomment(@PathVariable("recomment_id") Long recommentId, @RequestBody CommentDto commentDto) {
-//        CommentDto updatedRecomment = commentService.editRecomment(recommentId, commentDto);
-//        return ResponseEntity.ok(updatedRecomment);
-//    }
-//
-//    // 대댓글 삭제
-//    @DeleteMapping("/recomment/{recomment_id}")
-//    public ResponseEntity<Void> deleteRecomment(@PathVariable("recomment_id") Long recommentId) {
-//        commentService.deleteRecomment(recommentId);
-//        return ResponseEntity.ok().build();
-//    }
 }

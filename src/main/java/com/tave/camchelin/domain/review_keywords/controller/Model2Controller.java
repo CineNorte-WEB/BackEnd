@@ -1,20 +1,15 @@
-package com.tave.camchelin.domain.review_analysis.controller;
+package com.tave.camchelin.domain.review_keywords.controller;
 
-import com.tave.camchelin.domain.places.dto.PlaceDto;
-import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.service.PlaceService;
-import com.tave.camchelin.domain.review_analysis.dto.Model2RequestDto;
-import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
-import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
-import com.tave.camchelin.domain.review_analysis.service.Model1AnalysisService;
-import com.tave.camchelin.domain.review_analysis.service.Model2AnalysisService;
+import com.tave.camchelin.domain.review_keywords.dto.Model2RequestDto;
+import com.tave.camchelin.domain.review_keywords.entity.Model1Results;
+import com.tave.camchelin.domain.review_keywords.service.Model1AnalysisService;
+import com.tave.camchelin.domain.review_keywords.service.Model2AnalysisService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/model2")
@@ -33,9 +28,6 @@ public class Model2Controller {
     @PostMapping("/analyze")
     public ResponseEntity<?> analyzeAndSave(@RequestBody Model2RequestDto requestDto) {
         try {
-            // Place 조회
-//            PlaceDto placeDto = placeService.getPlaceByName(requestDto.storename());
-//            Place place = placeDto.toEntity(placeService.getUnivEntityByName(placeDto.getUnivName()));
             System.out.println("requestDto = " + requestDto.storename());
             // 모델1 결과 조회
             Model1Results model1Result = model1AnalysisService.findByStoreName(requestDto.storename());

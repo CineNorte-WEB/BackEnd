@@ -1,9 +1,9 @@
 package com.tave.camchelin.global.callapi;
 
-import com.tave.camchelin.domain.review_analysis.dto.Model2RequestDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model2ResponseDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model1RequestDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model1ResponseDto;
+import com.tave.camchelin.domain.review_keywords.dto.Model2RequestDto;
+import com.tave.camchelin.domain.review_keywords.dto.Model2ResponseDto;
+import com.tave.camchelin.domain.review_keywords.dto.Model1RequestDto;
+import com.tave.camchelin.domain.review_keywords.dto.Model1ResponseDto;
 import jakarta.transaction.Transactional;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -16,8 +16,8 @@ import java.nio.charset.StandardCharsets;
 public class CallApiService {
 
     private final WebClient webClient;
-    private static final String MODEL1_URL = "http://127.0.0.1:8001/generate";
-    private static final String MODEL2_URL = "http://127.0.0.1:8000/analyze";
+    private static final String MODEL1_URL = "http://172.17.0.3:8001/generate";
+    private static final String MODEL2_URL = "http://172.17.0.4:8000/analyze";
 
     public CallApiService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();

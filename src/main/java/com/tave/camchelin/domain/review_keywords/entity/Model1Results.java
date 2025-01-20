@@ -1,11 +1,10 @@
-package com.tave.camchelin.domain.review_analysis.entity;
+package com.tave.camchelin.domain.review_keywords.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
-import com.tave.camchelin.domain.review_analysis.ListToJsonConverter;
+import com.tave.camchelin.domain.review_keywords.ListToJsonConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -31,11 +30,4 @@ public class Model1Results extends BaseEntity {
     @Convert(converter = ListToJsonConverter.class)
     @Column(name = "negative_keywords", columnDefinition = "TEXT")
     private List<String> negativeKeywords;
-
-//    @Column(nullable = false, updatable = false)
-//    private LocalDateTime createdAt = LocalDateTime.now();
-//
-//    private LocalDateTime updatedAt;
-//
-//
 }

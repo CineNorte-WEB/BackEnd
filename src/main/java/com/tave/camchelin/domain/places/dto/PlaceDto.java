@@ -2,7 +2,7 @@ package com.tave.camchelin.domain.places.dto;
 
 import com.tave.camchelin.domain.menus.dto.MenuDto;
 import com.tave.camchelin.domain.places.entity.Place;
-import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
+import com.tave.camchelin.domain.review_keywords.entity.Model2Results;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

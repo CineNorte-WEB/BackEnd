@@ -1,10 +1,10 @@
 package com.tave.camchelin.domain.review_posts.service;
 
-import com.tave.camchelin.domain.review_analysis.dto.Model1RequestDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model2RequestDto;
-import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
-import com.tave.camchelin.domain.review_analysis.service.Model1AnalysisService;
-import com.tave.camchelin.domain.review_analysis.service.Model2AnalysisService;
+import com.tave.camchelin.domain.review_keywords.dto.Model1RequestDto;
+import com.tave.camchelin.domain.review_keywords.dto.Model2RequestDto;
+import com.tave.camchelin.domain.review_keywords.entity.Model1Results;
+import com.tave.camchelin.domain.review_keywords.service.Model1AnalysisService;
+import com.tave.camchelin.domain.review_keywords.service.Model2AnalysisService;
 import com.tave.camchelin.domain.review_posts.dto.request.UpdateRequestReviewDto;
 import com.tave.camchelin.domain.communities.entity.Community;
 import com.tave.camchelin.domain.communities.repository.CommunityRepository;
@@ -23,9 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

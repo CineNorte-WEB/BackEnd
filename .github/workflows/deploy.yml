@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main  # main 브랜치에 push할 때 트리거
+      - develop_action  # main 브랜치에 push할 때 트리거
 
 jobs:
   deploy:
@@ -38,23 +38,19 @@ jobs:
           docker buildx create --use
           docker buildx build --platform linux/amd64 -t tjdgus3488/camchelin:latest . --push
 
+      # 6. Set permissions for SSH key
       - name: Set permissions for SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/camchelin_ec2.pem
           chmod 400 ~/.ssh/camchelin_ec2.pem
 
+      # 7. Add Host to Known Hosts
       - name: Add Host to Known Hosts
         run: |
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: SSH Debugging
-        run: |
-          ls -al ~/.ssh
-          ssh -vvv -i ~/.ssh/camchelin_ec2.pem ubuntu@${{ secrets.EC2_HOST }}
-      
-
-      # 6. EC2에 SSH로 접속 및 컨테이너 실행
+      # 8. SSH로 접속하여 application.yml 생성 및 컨테이너 실행
       - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -62,7 +58,16 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            docker pull tjdgus3488/camchelin:latest
-            docker stop camchelin|| true
+            # Docker 컨테이너 실행 환경 준비
+            mkdir -p ~/camchelin/config
+            echo "${{ secrets.APPLICATION_YML }}" > ~/camchelin/config/application.yml
+
+            # 기존 컨테이너 중지 및 제거
+            docker stop camchelin || true
             docker rm camchelin || true
-            docker run -d --name camchelin -p 8080:8080 tjdgus3488/camchelin:latest
+
+            # Docker 컨테이너 실행
+            docker pull tjdgus3488/camchelin:latest
+            docker run -d --name camchelin -p 8080:8080 \
+              -v ~/camchelin/config/application.yml:/app/src/main/resources/application.yml \
+              tjdgus3488/camchelin:latest

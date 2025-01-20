@@ -1,11 +1,10 @@
-package com.tave.camchelin.domain.review_analysis.entity;
+package com.tave.camchelin.domain.review_keywords.entity;
 
 import com.tave.camchelin.domain.BaseEntity;
-import com.tave.camchelin.domain.review_analysis.ListToJsonConverter;
+import com.tave.camchelin.domain.review_keywords.ListToJsonConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity

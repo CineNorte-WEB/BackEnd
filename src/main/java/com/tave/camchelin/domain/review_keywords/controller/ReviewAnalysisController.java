@@ -1,11 +1,11 @@
-package com.tave.camchelin.domain.review_analysis.controller;
+package com.tave.camchelin.domain.review_keywords.controller;
 
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.service.PlaceService;
-import com.tave.camchelin.domain.review_analysis.dto.Model1RequestDto;
-import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
-import com.tave.camchelin.domain.review_analysis.service.ReviewProcessService;
+import com.tave.camchelin.domain.review_keywords.dto.Model1RequestDto;
+import com.tave.camchelin.domain.review_keywords.entity.Model2Results;
+import com.tave.camchelin.domain.review_keywords.service.ReviewProcessService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
