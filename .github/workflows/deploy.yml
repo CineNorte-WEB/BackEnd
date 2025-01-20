@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - develop_action  # main 브랜치에 push할 때 트리거
+      - main  # main 브랜치에 push할 때 트리거
 
 jobs:
   deploy:
@@ -50,7 +50,7 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # 8. SSH로 접속하여 application.yml 생성 및 컨테이너 실행
+      # 8. SSH로 EC2에 접속하여 애플리케이션 배포
       - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -58,16 +58,27 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Docker 컨테이너 실행 환경 준비
+            echo "Creating application.yml..."
             mkdir -p ~/camchelin/config
             echo "${{ secrets.APPLICATION_YML }}" > ~/camchelin/config/application.yml
+            echo "application.yml created:"
+            cat ~/camchelin/config/application.yml
 
-            # 기존 컨테이너 중지 및 제거
+            echo "Stopping and removing existing Docker container..."
             docker stop camchelin || true
             docker rm camchelin || true
 
-            # Docker 컨테이너 실행
+            echo "Pulling latest Docker image..."
             docker pull tjdgus3488/camchelin:latest
+
+            echo "Running new Docker container..."
             docker run -d --name camchelin -p 8080:8080 \
               -v ~/camchelin/config/application.yml:/app/src/main/resources/application.yml \
               tjdgus3488/camchelin:latest
+
+            echo "Verifying application.yml in container..."
+            docker exec camchelin ls /app/src/main/resources/application.yml || echo "application.yml not found in container"
+            docker exec camchelin cat /app/src/main/resources/application.yml || echo "Failed to read application.yml from container"
+
+            echo "Checking running container status..."
+            docker ps
