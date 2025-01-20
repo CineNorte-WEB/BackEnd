@@ -73,10 +73,12 @@ jobs:
 
             echo "Running new Docker container..."
             docker run -d --name camchelin -p 8080:8080 \
-              -v ~/camchelin/config/application.yml:/app/src/main/resources/application.yml \
-              tjdgus3488/camchelin:latest
+            -v ~/camchelin/config/application.yml:/app/src/main/resources/application.yml \
+            -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            tjdgus3488/camchelin:latest
+  
 
-            echo "Verifying application.yml in container..."
+  echo "Verifying application.yml in container..."
             docker exec camchelin ls /app/src/main/resources/application.yml || echo "application.yml not found in container"
             docker exec camchelin cat /app/src/main/resources/application.yml || echo "Failed to read application.yml from container"
 
