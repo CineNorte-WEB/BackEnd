@@ -78,7 +78,7 @@ jobs:
             tjdgus3488/camchelin:latest
   
 
-  echo "Verifying application.yml in container..."
+            echo "Verifying application.yml in container..."
             docker exec camchelin ls /app/src/main/resources/application.yml || echo "application.yml not found in container"
             docker exec camchelin cat /app/src/main/resources/application.yml || echo "Failed to read application.yml from container"
 
