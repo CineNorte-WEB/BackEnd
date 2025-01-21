@@ -43,6 +43,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReviewPost> reviewPosts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewPost> boardPosts = new ArrayList<>();
+
     public void update(String email, String nickname, Univ univ) {
         this.email = email;
         this.nickname = nickname;
