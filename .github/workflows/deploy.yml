@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - develop_action  # develop_action 브랜치에 push할 때 트리거
+      - main  # develop_action 브랜치에 push할 때 트리거
 
 jobs:
   deploy:

@@ -18,6 +18,7 @@ public class BoardPostDto {
     private Community community;
     private String title;
     private String content;
+    private String image;
 
     public BoardPost toEntity(User user, Community community) {
         return BoardPost.builder()
@@ -25,6 +26,7 @@ public class BoardPostDto {
                 .community(community)
                 .title(this.title)
                 .content(this.content)
+                .image(this.image)
                 .build();
     }
 
@@ -34,6 +36,7 @@ public class BoardPostDto {
                 .user(boardPost.getUser())
                 .title(boardPost.getTitle())
                 .content(boardPost.getContent())
+                .image(boardPost.getImage())
                 .build();
     }
 }

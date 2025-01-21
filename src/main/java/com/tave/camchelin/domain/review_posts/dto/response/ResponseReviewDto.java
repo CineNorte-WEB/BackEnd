@@ -24,6 +24,7 @@ public class ResponseReviewDto {
     private Long placeId; // 장소 ID
     private String placeName; // 장소 이름
     private String type;
+    private String image;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt; // 생성 시간
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -42,6 +43,7 @@ public class ResponseReviewDto {
                 .placeId(place != null ? place.getId() : null)
                 .placeName(place != null ? place.getName() : null)
                 .type("review")
+                .image(reviewPost.getImage())
                 .createdAt(reviewPost.getCreatedAt())
                 .updatedAt(reviewPost.getUpdatedAt())
                 .build();

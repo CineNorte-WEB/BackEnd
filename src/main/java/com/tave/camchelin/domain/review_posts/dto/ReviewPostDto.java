@@ -23,6 +23,7 @@ public class ReviewPostDto {
     private Place place;
     private String title;
     private String content;
+    private String image;
 
     public ReviewPost toEntity(User user, Community community, Place place) {
         return ReviewPost.builder()
@@ -31,6 +32,7 @@ public class ReviewPostDto {
                 .place(place)
                 .title(this.title)
                 .content(this.content)
+                .image(this.image)
                 .build();
     }
 
@@ -41,6 +43,7 @@ public class ReviewPostDto {
                 .place(reviewPost.getPlace())
                 .title(reviewPost.getTitle())
                 .content(reviewPost.getContent())
+                .image(reviewPost.getImage())
                 .build();
     }
 }
