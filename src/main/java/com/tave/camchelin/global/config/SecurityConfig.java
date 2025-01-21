@@ -62,7 +62,7 @@ public class SecurityConfig {
 //                .addFilterAfter(jsonUsernamePasswordLoginFilter(), LogoutFilter.class)
                 .authorizeHttpRequests((authorize) -> authorize
                         .anyRequest().permitAll())
-                        //.requestMatchers("/login", "/", "/hello", "/users/register", "/signin", "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll() // 로그인한 유저에게만 서비스 제공
+                        //.requestMatchers("/login", "/users/findpw", "/", "/users/register", "/signin", "/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**").permitAll() // 로그인한 유저에게만 서비스 제공
                         //.anyRequest().authenticated())
                 // 폼 로그인
 //				.formLogin(formLogin -> formLogin

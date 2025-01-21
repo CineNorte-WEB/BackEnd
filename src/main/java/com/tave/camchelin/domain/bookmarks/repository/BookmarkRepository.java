@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Bookmark> findByUserId(Long userId);
     Optional<Bookmark> findByUserAndPlace(User user, Place place);
+    boolean existsByUserIdAndPlaceId(Long userId, Long placeId);
 }
