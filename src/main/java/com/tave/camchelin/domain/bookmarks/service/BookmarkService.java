@@ -15,4 +15,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
+    private final BookmarkRepository bookmarkRepository;
+    public boolean isBookmarkExist(Long userId, Long placeId) {
+        // 이미 해당 가게가 북마크된 상태인지 확인
+        return bookmarkRepository.existsByUserIdAndPlaceId(userId, placeId);
+    }
 }

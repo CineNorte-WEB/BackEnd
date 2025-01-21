@@ -16,6 +16,7 @@ public class UpdateRequestReviewDto {
         private Long placeId; // 수정할 장소 ID
         private String title; // 수정할 제목
         private String content; // 수정할 내용
+        private String image;
 
     public ReviewPost toEntity(User user, Place place) {
         return ReviewPost.builder()
@@ -23,6 +24,7 @@ public class UpdateRequestReviewDto {
                 .content(this.content)
                 .user(user)
                 .place(place)
+                .image(this.image)
                 .build();
     }
 
@@ -30,6 +32,7 @@ public class UpdateRequestReviewDto {
         return UpdateRequestReviewDto.builder()
                 .title(reviewPost.getTitle())
                 .content(reviewPost.getContent())
+                .image(reviewPost.getImage())
                 .placeId(reviewPost.getPlace() != null ? reviewPost.getPlace().getId() : null)
                 .build();
     }

@@ -1,17 +1,16 @@
-package com.tave.camchelin.domain.review_analysis.service;
+package com.tave.camchelin.domain.review_keywords.service;
 
 import com.tave.camchelin.domain.places.entity.Place;
-import com.tave.camchelin.domain.review_analysis.dto.Model2RequestDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model2ResponseDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model1RequestDto;
-import com.tave.camchelin.domain.review_analysis.dto.Model1ResponseDto;
-import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
-import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
-import com.tave.camchelin.domain.review_analysis.repository.Model1ResultsRepository;
-import com.tave.camchelin.domain.review_analysis.repository.Model2ResultsRepository;
+import com.tave.camchelin.domain.review_keywords.dto.Model2RequestDto;
+import com.tave.camchelin.domain.review_keywords.dto.Model2ResponseDto;
+import com.tave.camchelin.domain.review_keywords.dto.Model1RequestDto;
+import com.tave.camchelin.domain.review_keywords.dto.Model1ResponseDto;
+import com.tave.camchelin.domain.review_keywords.entity.Model1Results;
+import com.tave.camchelin.domain.review_keywords.entity.Model2Results;
+import com.tave.camchelin.domain.review_keywords.repository.Model1ResultsRepository;
+import com.tave.camchelin.domain.review_keywords.repository.Model2ResultsRepository;
 import com.tave.camchelin.global.callapi.CallApiService;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

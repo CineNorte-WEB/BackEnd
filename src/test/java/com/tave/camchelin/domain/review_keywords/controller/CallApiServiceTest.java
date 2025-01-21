@@ -1,4 +1,4 @@
-package com.tave.camchelin.domain.review_analysis.controller;
+package com.tave.camchelin.domain.review_keywords.controller;
 
 import org.springframework.boot.test.context.SpringBootTest;
 

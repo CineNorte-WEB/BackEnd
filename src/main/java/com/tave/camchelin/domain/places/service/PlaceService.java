@@ -4,24 +4,20 @@ import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.places.dto.SearchResponseDto;
 import com.tave.camchelin.domain.places.entity.Place;
 import com.tave.camchelin.domain.places.repository.PlaceRepository;
-import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
-import com.tave.camchelin.domain.review_analysis.repository.Model2ResultsRepository;
-import com.tave.camchelin.domain.review_analysis.service.Model2AnalysisService;
+import com.tave.camchelin.domain.review_keywords.entity.Model2Results;
+import com.tave.camchelin.domain.review_keywords.repository.Model2ResultsRepository;
+import com.tave.camchelin.domain.review_keywords.service.Model2AnalysisService;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

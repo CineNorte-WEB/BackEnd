@@ -40,7 +40,6 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
         log.info( "로그인에 성공합니다. email: {}" , email);
         log.info( "AccessToken 을 발급합니다. AccessToken: {}" , accessToken);
         log.info( "RefreshToken 을 발급합니다. RefreshToken: {}" , refreshToken);
-        log.info( "push되는지 확인");
 
         String responseJson = String.format(
                 "{" +

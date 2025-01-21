@@ -1,11 +1,10 @@
-package com.tave.camchelin.domain.review_analysis.repository;
+package com.tave.camchelin.domain.review_keywords.repository;
 
-import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
+import com.tave.camchelin.domain.review_keywords.entity.Model2Results;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface Model2ResultsRepository extends JpaRepository<Model2Results, Long> {

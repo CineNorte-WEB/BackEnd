@@ -1,10 +1,9 @@
 package com.tave.camchelin.domain.univs.service;
 
 import com.tave.camchelin.domain.places.dto.PlaceDto;
-import com.tave.camchelin.domain.review_analysis.entity.Model2Results;
-import com.tave.camchelin.domain.review_analysis.repository.Model1ResultsRepository;
-import com.tave.camchelin.domain.review_analysis.repository.Model2ResultsRepository;
-import com.tave.camchelin.domain.review_analysis.service.Model2AnalysisService;
+import com.tave.camchelin.domain.review_keywords.entity.Model2Results;
+import com.tave.camchelin.domain.review_keywords.repository.Model2ResultsRepository;
+import com.tave.camchelin.domain.review_keywords.service.Model2AnalysisService;
 import com.tave.camchelin.domain.univs.dto.UnivDto;
 import com.tave.camchelin.domain.univs.entity.Univ;
 import com.tave.camchelin.domain.univs.repository.UnivRepository;

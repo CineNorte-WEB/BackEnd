@@ -14,12 +14,14 @@ import lombok.NoArgsConstructor;
 public class UpdateRequestBoardDto {
     private String title; // 수정할 제목
     private String content; // 수정할 내용
+    private String image;
 
     public BoardPost toEntity(User user) {
         return BoardPost.builder()
                 .user(user)
                 .title(this.title)
                 .content(this.content)
+                .image(this.image)
                 .build();
     }
 
@@ -27,6 +29,7 @@ public class UpdateRequestBoardDto {
         return UpdateRequestBoardDto.builder()
                 .title(boardPost.getTitle())
                 .content(boardPost.getContent())
+                .image(boardPost.getImage())
                 .build();
     }
 }

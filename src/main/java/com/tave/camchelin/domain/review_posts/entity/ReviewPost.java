@@ -38,6 +38,9 @@ public class ReviewPost extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(columnDefinition = "TEXT")
+    private String image;
+
     public void edit(Place place, String title, String content) {
         if (place != null) {
             this.place = place;

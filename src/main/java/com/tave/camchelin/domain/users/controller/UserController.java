@@ -1,6 +1,7 @@
 package com.tave.camchelin.domain.users.controller;
 
 import com.tave.camchelin.domain.board_posts.dto.response.ResponseBoardDto;
+import com.tave.camchelin.domain.bookmarks.service.BookmarkService;
 import com.tave.camchelin.domain.places.dto.PlaceDto;
 import com.tave.camchelin.domain.review_posts.dto.response.ResponseReviewDto;
 import com.tave.camchelin.domain.users.dto.UserDto;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final BookmarkService bookmarkService;
 
     @PostMapping("/register") // 회원 등록
     public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
@@ -106,6 +108,12 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
+        boolean isAlreadyBookmarked = bookmarkService.isBookmarkExist(userId, placeId);
+        if (isAlreadyBookmarked) {
+            log.info("이미 해당 가게가 북마크에 추가되어 있습니다.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();  // 409 Conflict
+        }
+
         userService.addBookmark(userId, placeId);
         return ResponseEntity.ok().build();
     }
@@ -142,7 +150,7 @@ public class UserController {
         return ResponseEntity.ok(boardPosts);
     }
 
-    @GetMapping("/reviews") // 현재 로그인 사용자의 리뷰 조회 (페이징 적용)
+    @GetMapping("/reviews") // 현재 로그인 사용자의 리뷰 조회 (페이징 적용ㅇa fs df)
     public ResponseEntity<Page<ResponseReviewDto>> getUserReviews(
             @RequestHeader("Authorization") String token,
             @RequestParam(defaultValue = "0") int page,

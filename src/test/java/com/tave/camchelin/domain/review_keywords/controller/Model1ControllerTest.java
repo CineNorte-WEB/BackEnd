@@ -1,31 +1,12 @@
-package com.tave.camchelin.domain.review_analysis.controller;
+package com.tave.camchelin.domain.review_keywords.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tave.camchelin.domain.places.dto.PlaceDto;
-import com.tave.camchelin.domain.places.entity.Place;
-import com.tave.camchelin.domain.places.service.PlaceService;
-import com.tave.camchelin.domain.review_analysis.dto.Model1RequestDto;
-import com.tave.camchelin.domain.review_analysis.entity.Model1Results;
-import com.tave.camchelin.domain.review_analysis.service.Model1AnalysisService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.ExpectedCount.times;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(Model1Controller.class)

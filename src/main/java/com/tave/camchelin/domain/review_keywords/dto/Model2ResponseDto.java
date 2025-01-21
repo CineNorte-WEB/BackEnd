@@ -1,4 +1,4 @@
-package com.tave.camchelin.domain.review_analysis.dto;
+package com.tave.camchelin.domain.review_keywords.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
