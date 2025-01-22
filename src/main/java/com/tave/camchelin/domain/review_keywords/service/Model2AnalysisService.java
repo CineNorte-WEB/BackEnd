@@ -10,6 +10,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,8 @@ public class Model2AnalysisService {
 
             // 기존 데이터 업데이트
             if (result.groupKeywords() != null && !result.groupKeywords().trim().isEmpty()) {
-                model2Result.getGroupKeywords().addAll(List.of(result.groupKeywords().split(", ")));
+                List<String> newKeywords = List.of(result.groupKeywords().split(", "));
+                model2Result.setGroupKeywords(new ArrayList<>(newKeywords)); // 기존 키워드 대체
             }
             model2Result.setRepresentativeSentence(result.representativeSentence());
             model2ResultsRepository.save(model2Result);
