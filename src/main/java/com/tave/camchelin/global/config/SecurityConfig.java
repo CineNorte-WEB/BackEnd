@@ -70,7 +70,7 @@ public class SecurityConfig {
 //						.defaultSuccessUrl("/home"))
                 .logout((logout) -> logout
                         .addLogoutHandler(jwtLogoutHandler()) // JwtLogoutHandler 추가
-                        .logoutSuccessUrl("/") // 로그아웃 하면 어느 화면으로 돌아갈 것인가 -> 결정해야 함
+                        .logoutSuccessUrl("https://camchelin.vercel.app") // 로그아웃 하면 어느 화면으로 돌아갈 것인가 -> 결정해야 함
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")) // 세션 무효화 및 쿠키 삭제
                 .sessionManagement(session -> session
@@ -85,7 +85,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "https://camchelin.vercel.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(Arrays.asList("*")); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 자격 증명 허용
